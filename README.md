@@ -1,6 +1,14 @@
-# (CSC 360) - Operating Systems - Complete Notes
+# (CSC 360) - Operating Systems - Complete Notes - Spring 2023
 
 [TOC]
+
+# Class Intro
+
+> Prof:
+>
+> Email:
+>
+> Office Hours:
 
 > All chapters covered:  ("//" = split in slides)
 >
@@ -14,26 +22,26 @@
 >   - 4.1, 4.2, 4.3, 4.4, 4.6
 > - **Chapter 5 - Process Synchronization**
 >   - 5.1, 5.2, 5.3 // 5.5, 5.6, 5.7
-
-Formatting Legend: 
-
-- Chapters = H1
-- Sub headings (ex, 1.1, 1.2, etc.) = H2
-- Sub-Sub heading titles = H4
-
-
+>
+> 
+>
+> Formatting Legend: 
+>
+> - Chapters = H1
+> - Sub headings (ex, 1.1, 1.2, etc.) = H2
+> - Sub-Sub heading titles = H4
 
 # Midterm Review
 
 Midterm info:
 
-> **Date:** Monday Oct. 31, 2022
+> **Date:** 
 >
-> **Time:** 8:30-9:50 am
+> **Time:** 
 >
-> **Location:** ELL 168 or CAL
+> **Location:** 
 
-![image-20221021130714300](image-20221021130714300.png)
+![image-20221021130714300](assets/image-20221021130714300.png)
 
 Content - Concepts portion
 
@@ -64,13 +72,11 @@ Content - Programming Understanding portion
 > - **Semaphores, Conditional variables, mutex, monitors and Proc. sync.**
 >   - sem_init(), sem_wait(), sem_post(), pthread_mutex_lock(), pthread_mutex_unlock, pthread_cond_wait(), pthread_cond_signal()
 
-## // Concepts Section
-
 ### batching processing
 
 Batch processing is a technique in which an Operating System collects the programs and data together in a batch before processing starts.
 
-![image-20221022163849827](image-20221022163849827.png)
+![image-20221022163849827](assets/image-20221022163849827.png)
 
 The operatig systems does the following BEFORE the processing starts:
 
@@ -89,7 +95,7 @@ The operatig systems does the following BEFORE the processing starts:
 
 Sharing the processor, when two or more programs reside in memory at the same time.
 
-![image-20221022164509251](image-20221022164509251.png)
+![image-20221022164509251](assets/image-20221022164509251.png)
 
 **An OS does the following activities related to multiprogramming:**
 
@@ -110,7 +116,7 @@ Sharing the processor, when two or more programs reside in memory at the same ti
 
 Multitasking is when multiple jobs are executed by the CPU simultaneously by switching between them. 
 
-![image-20221022164221070](image-20221022164221070.png)
+![image-20221022164221070](assets/image-20221022164221070.png)
 
 **An OS does the following activities related to multitasking:**
 
@@ -142,7 +148,7 @@ A process may be in one of the following states:
 
 > ***Note:*** That only **one** process can be running on any processor at any instant.
 
-![image-20221022165137887](image-20221022165137887.png)
+![image-20221022165137887](assets/image-20221022165137887.png)
 
 NEW => READY => RUNNING => TERMINATED
 
@@ -162,7 +168,7 @@ NEW => READY => RUNNING => WAITING => READY
 
 The creating process is called a parent process, and the new processes are called the children of that process. Each of these new processes may in turn create other processes, forming a tree of processes.
 
-![image-20221022170124300](image-20221022170124300.png)
+![image-20221022170124300](assets/image-20221022170124300.png)
 
 - A child process may be able to obtain its resources **directly from the operating system**, or it may be constrained to a subset of the **resources of the parent process**. 
 - he parent process might pass down information to the child process.
@@ -191,7 +197,7 @@ The creating process is called a parent process, and the new processes are calle
 >
 > A block of memory that hold information about the current process.
 
-![image-20221022172022654](image-20221022172022654.png)
+![image-20221022172022654](assets/image-20221022172022654.png)
 
 **Each PCB can hold info on the following:**
 
@@ -203,11 +209,11 @@ The creating process is called a parent process, and the new processes are calle
 - <u>accounting information</u> - Realtime limits
 - <u>I/O status</u> - List of all IO allocated
 
-![image-20221022172428047](image-20221022172428047.png)
+![image-20221022172428047](assets/image-20221022172428047.png)
 
 Context switching is loading Info into the PCB and passing it from process to processes.
 
-![image-20221022172552250](image-20221022172552250.png)
+![image-20221022172552250](assets/image-20221022172552250.png)
 
 ### IPC (Inter-process Communication) with message passing
 
@@ -227,7 +233,7 @@ Context switching is loading Info into the PCB and passing it from process to pr
 | Easier to implement                           |                                                          |
 | No need to share address space                |                                                          |
 
-![image-20221022173321505](image-20221022173321505.png)
+![image-20221022173321505](assets/image-20221022173321505.png)
 
 - Messages sent by a process can be either fixed or variable in size.
   - If only fixed-sized messages can be sent, the system-level implementation is straightforward. 
@@ -373,7 +379,7 @@ The producer and consumer must be synchronized, so that the consumer does not tr
 
 ##### Motivation
 
-![image-20221022184149838](image-20221022184149838.png)
+![image-20221022184149838](assets/image-20221022184149838.png)
 
 With threading a single application or program can:
 
@@ -384,7 +390,7 @@ With threading a single application or program can:
 
 Like IPC threads help RPC servers handle concurrent connections.
 
-![image-20221022184424212](image-20221022184424212.png)
+![image-20221022184424212](assets/image-20221022184424212.png)
 
 ##### Benefits of threading
 
@@ -395,7 +401,7 @@ Like IPC threads help RPC servers handle concurrent connections.
 
 #### Multicore Programming
 
-![image-20221022184810891](image-20221022184810891.png)
+![image-20221022184810891](assets/image-20221022184810891.png)
 
 ##### Challenges in multicore Programming
 
@@ -441,7 +447,7 @@ A relationship must exist between user threads and kernel threads. 3 common ways
 
 #### Many-to-One Model 
 
-![image-20221022190333089](image-20221022190333089.png)
+![image-20221022190333089](assets/image-20221022190333089.png)
 
 > Maps many user-level threads to one kernel thread.
 
@@ -454,7 +460,7 @@ A relationship must exist between user threads and kernel threads. 3 common ways
 
 #### One-to-One Model
 
-![image-20221022190345411](image-20221022190345411.png)
+![image-20221022190345411](assets/image-20221022190345411.png)
 
 >   Maps each user thread to a kernel thread.
 
@@ -467,7 +473,7 @@ A relationship must exist between user threads and kernel threads. 3 common ways
 
 #### Many-to-Many Model
 
-![image-20221022191444594](image-20221022191444594.png)
+![image-20221022191444594](assets/image-20221022191444594.png)
 
 > multiplexes many user-level threads to a smaller or equal number of kernel threads.
 
@@ -1297,11 +1303,11 @@ computers in home devices and automobiles may have numeric keypads and may turn 
 
 ## 1.2 - Computer-System Organization
 
-![image-20221018155522395](image-20221018155522395.png)
+![image-20221018155522395](assets/image-20221018155522395.png)
 
 #### Computer system operation 
 
-![image-20221018155611140](image-20221018155611140.png)
+![image-20221018155611140](assets/image-20221018155611140.png)
 
 #### Storage Structure
 
@@ -1319,11 +1325,11 @@ permanently but cant because:
 - Main memory is usually too small to store all needed programs and data permanently.
 - Main memory is a **volatile** storage device that loses its contents when power is turned off or otherwise lost.
 
-![image-20221018160011925](image-20221018160011925.png)
+![image-20221018160011925](assets/image-20221018160011925.png)
 
 ## 1.3 - Computer-System Architecture
 
-![image-20221018160050679](image-20221018160050679.png)
+![image-20221018160050679](assets/image-20221018160050679.png)
 
 #### Single Processor systems
 
@@ -1359,7 +1365,7 @@ permanently but cant because:
 The difference between symmetric and asymmetric multiprocessing may
 result from either hardware or software.
 
-![image-20221018162258406](image-20221018162258406.png)
+![image-20221018162258406](assets/image-20221018162258406.png)
 
 ##### Multicore Processors
 
@@ -1367,7 +1373,7 @@ A recent trend in CPU design is to include multiple computing cores on a single 
 
 They can be <u>more efficient</u> than multiple chips with single cores because on-chip communication is faster than between-chip communication.
 
-![image-20221018162654731](image-20221018162654731.png)
+![image-20221018162654731](assets/image-20221018162654731.png)
 
 ##### Blade Servers
 
@@ -1393,7 +1399,7 @@ They are composed of two or more individual systems—or nodes—joined together
 >
 > which allow many systems to attach to a pool of storage. If the applications and their data are stored on the SAN,then the cluster software can assign the application to run on any host that is attached to the SAN.
 
-![image-20221018163117177](image-20221018163117177.png)
+![image-20221018163117177](assets/image-20221018163117177.png)
 
 ## 1.4 - Operating-System Structure
 
@@ -1417,7 +1423,7 @@ Modern operating systems are interrupt driven. If there are no processes to exec
 
 In order to ensure the proper execution of the operating system, we must be able to distinguish between the execution of operating-system code and user defined code. 
 
-![image-20221018163706027](image-20221018163706027.png)
+![image-20221018163706027](assets/image-20221018163706027.png)
 
 ##### User mode vs Kernel Mode
 
@@ -1484,7 +1490,7 @@ The operating system implements the abstract concept of a file by managing mass-
 
 ## 2.1 - Operating-System Services
 
-![image-20221018165321410](image-20221018165321410.png)
+![image-20221018165321410](assets/image-20221018165321410.png)
 
 One set of operating system services provides functions that are helpful to
 the user
@@ -1574,13 +1580,13 @@ in the early 1970s at Xerox PARC research facility. The first GUI appeared on th
 
 APIs are used to abstract away more detailed system calls.
 
-![image-20221018171350179](image-20221018171350179.png)
+![image-20221018171350179](assets/image-20221018171350179.png)
 
 > **System call interface**
 >
 > The run-time support system (a set of functions built into libraries included with a compiler).
 
-![image-20221018171518445](image-20221018171518445.png)
+![image-20221018171518445](assets/image-20221018171518445.png)
 
 #### Three general methods are used to pass parameters to the operating system.
 
@@ -1590,7 +1596,7 @@ APIs are used to abstract away more detailed system calls.
 
 > ***<u>Note:</u>*** Some operating systems prefer the block or stack method because those approaches do not limit the number or length of parameters being passed.
 
-![image-20221018171849157](image-20221018171849157.png)
+![image-20221018171849157](assets/image-20221018171849157.png)
 
 ## 2.4 - Types of System Calls
 
@@ -1606,8 +1612,8 @@ To ensure the integrity of the data being shared, operating systems often provid
 
 
 
-| ![image-20221018173411277](image-20221018173411277.png) | ![image-20221018173335846](image-20221018173335846.png) |
-| ------------------------------------------------------- | ------------------------------------------------------- |
+| ![image-20221018173411277](assets/image-20221018173411277.png) | ![image-20221018173335846](assets/image-20221018173335846.png) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
 
 ##### To create a new proccess
 
@@ -1615,7 +1621,7 @@ The system executes a fork() system call. Then, the selected program is loaded i
 
 When the process is done, it executes an exit() system call to terminate, returning to the invoking process a status code of 0 or a nonzero error code.
 
-![image-20221018172513167](image-20221018172513167.png)
+![image-20221018172513167](assets/image-20221018172513167.png)
 
 ##### Responsibilities:
 
@@ -1642,7 +1648,7 @@ We first need to be able to create() and delete() files.
 
 If the system programs are callable by other programs, then each can be considered an API by other system programs.
 
-![image-20221018172523515](image-20221018172523515.png)
+![image-20221018172523515](assets/image-20221018172523515.png)
 
 ##### Responsibilities:
 
@@ -1655,7 +1661,7 @@ If the system programs are callable by other programs, then each can be consider
 
 A process may need several resources to execute—main memory, disk drives, access to files, and so on. If the resources are available, they can be granted, and control can be returned to the user process. Otherwise, the process will have to wait until sufficient resources are available.
 
-![image-20221018172536287](image-20221018172536287.png)
+![image-20221018172536287](assets/image-20221018172536287.png)
 
 ##### Responsibilities:
 
@@ -1668,7 +1674,7 @@ A process may need several resources to execute—main memory, disk drives, acce
 
 Many system calls exist simply for the purpose of transferring information between the user program and the operating system. For example, most systems have a system call to return the current time() and date().Other system calls may return information about the system, such as the number of current users, the version number of the operating system, the amount of free memory or disk space, and so on.
 
-![image-20221018172547792](image-20221018172547792.png)
+![image-20221018172547792](assets/image-20221018172547792.png)
 
 ##### Responsibilities:
 
@@ -1681,7 +1687,7 @@ Many system calls exist simply for the purpose of transferring information betwe
 
 There are two common models of inter process communication: the message passing model and the shared-memory model. In the message-passing model, the communicating processes exchange messages with one another to transfer information. Messages can be exchanged between the processes either directly or indirectly through a common mailbox.
 
-![image-20221018172557102](image-20221018172557102.png)
+![image-20221018172557102](assets/image-20221018172557102.png)
 
 ##### Responsibilities:
 
@@ -1694,7 +1700,7 @@ There are two common models of inter process communication: the message passing 
 
 Protection provides a mechanism for controlling access to the resources provided by a computer system. Historically, protection was a concern only on multi programmed computer systems with several users. However, with the advent of networking and the Internet, all computer systems, from servers to mobile handheld devices, must be concerned with protection.
 
-![image-20221018172607326](image-20221018172607326.png)
+![image-20221018172607326](assets/image-20221018172607326.png)
 
 ##### Responsibilities:
 
@@ -1777,15 +1783,15 @@ higher-level language are reduced speed and increased storage requirements.
 
 #### Simple Structure
 
-![image-20221018180005993](image-20221018180005993.png)
+![image-20221018180005993](assets/image-20221018180005993.png)
 
-![image-20221018180032471](image-20221018180032471.png)
+![image-20221018180032471](assets/image-20221018180032471.png)
 
 #### Layered Approach
 
 With proper hardware support, operating systems can be broken into pieces that are smaller and more appropriate than those allowed by the original MS-DOS and UNIX systems.
 
-![image-20221018180136650](image-20221018180136650.png)
+![image-20221018180136650](assets/image-20221018180136650.png)
 
 The major difficulty with the layered approach involves appropriately
 defining the various layers.
@@ -1800,7 +1806,7 @@ efficient than other types. For example:
 The main function of the microkernel is to provide communication between
 the client program and the various services that are also running in user space.
 
-![image-20221018180409330](image-20221018180409330.png)
+![image-20221018180409330](assets/image-20221018180409330.png)
 
 > ***Note:*** The client program and service never interact directly.
 
@@ -1814,7 +1820,7 @@ The performance of microkernels can suffer due to increased system function over
 
 #### Modules
 
-![image-20221018180649206](image-20221018180649206.png)
+![image-20221018180649206](assets/image-20221018180649206.png)
 
 Organized around a central core with 7 modules:
 
@@ -1855,7 +1861,7 @@ Organized around a central core with 7 modules:
 - Program file or executable = passive entity
 - Process = active entity
 
-![image-20221018181926507](image-20221018181926507.png)
+![image-20221018181926507](assets/image-20221018181926507.png)
 
 #### Process State 
 
@@ -1875,11 +1881,11 @@ As a process executes, it changes state.
 
 
 
-![image-20221018182438997](image-20221018182438997.png)
+![image-20221018182438997](assets/image-20221018182438997.png)
 
-![image-20221018182556561](image-20221018182556561.png)
+![image-20221018182556561](assets/image-20221018182556561.png)
 
-![image-20221018182621942](image-20221018182621942.png)
+![image-20221018182621942](assets/image-20221018182621942.png)
 
 ## 3.2 - Process Scheduling
 
@@ -1899,7 +1905,7 @@ This queue is generally stored as a linked list. Each PCB includes a pointer fie
 >
 > ***Note:*** Each device has its own device queue
 
-![image-20221018185359744](image-20221018185359744.png)
+![image-20221018185359744](assets/image-20221018185359744.png)
 
 A process continues this cycle until it terminates, at which time it is removed from all queues and has its PCB and resources deallocated.
 
@@ -1932,7 +1938,7 @@ Main difference is the frequency of execution.
 
 Buffer zone between memory and sort term scheduling.
 
-![image-20221018190335199](image-20221018190335199.png)
+![image-20221018190335199](assets/image-20221018190335199.png)
 
 #### Context Switch
 
@@ -1951,7 +1957,7 @@ We perform a **state save** of the current state of the CPU, be it in kernel or 
 >
 > The pid provides a unique value for each process in the system, and it can be used as an index to access various attributes of a process within the kernel.
 
-![image-20221018190847065](image-20221018190847065.png)
+![image-20221018190847065](assets/image-20221018190847065.png)
 
 ##### When a process creates a new process, two possibilities for execution exist:
 
@@ -1963,7 +1969,7 @@ We perform a **state save** of the current state of the CPU, be it in kernel or 
 1. The child process is a duplicate of the parent process (it has the same program and data as the parent).
 2. The child process has a new program loaded into it.
 
-![image-20221018191051598](image-20221018191051598.png)
+![image-20221018191051598](assets/image-20221018191051598.png)
 
 #### Process Termination
 
@@ -1988,7 +1994,7 @@ The process stops with the exit() command.
 - Modularity
 - Convenience
 
-![image-20221018191625090](image-20221018191625090.png)
+![image-20221018191625090](assets/image-20221018191625090.png)
 
 ## 3.5 - Examples of IPC Systems
 
@@ -2010,7 +2016,7 @@ The process stops with the exit() command.
 | Easier to implement                           |                                                          |
 | No need to share address space                |                                                          |
 
-![image-20221022173321505](image-20221022173321505.png)
+![image-20221022173321505](assets/image-20221022173321505.png)
 
 - Messages sent by a process can be either fixed or variable in size.
   - If only fixed-sized messages can be sent, the system-level implementation is straightforward. 
@@ -2156,7 +2162,7 @@ The producer and consumer must be synchronized, so that the consumer does not tr
 
 #### Motivation
 
-![image-20221022184149838](image-20221022184149838.png)
+![image-20221022184149838](assets/image-20221022184149838.png)
 
 With threading a single application or program can:
 
@@ -2167,7 +2173,7 @@ With threading a single application or program can:
 
 Like IPC threads help RPC servers handle concurrent connections.
 
-![image-20221022184424212](image-20221022184424212.png)
+![image-20221022184424212](assets/image-20221022184424212.png)
 
 #### Benefits of threading
 
@@ -2178,7 +2184,7 @@ Like IPC threads help RPC servers handle concurrent connections.
 
 ## 4.2 - Multicore Programming
 
-![image-20221022184810891](image-20221022184810891.png)
+![image-20221022184810891](assets/image-20221022184810891.png)
 
 #### Challenges in multicore Programming
 
@@ -2222,7 +2228,7 @@ A relationship must exist between user threads and kernel threads. 3 common ways
 
 #### Many-to-One Model 
 
-![image-20221022190333089](image-20221022190333089.png)
+![image-20221022190333089](assets/image-20221022190333089.png)
 
 > Maps many user-level threads to one kernel thread.
 
@@ -2235,7 +2241,7 @@ A relationship must exist between user threads and kernel threads. 3 common ways
 
 #### One-to-One Model
 
-![image-20221022190345411](image-20221022190345411.png)
+![image-20221022190345411](assets/image-20221022190345411.png)
 
 >   Maps each user thread to a kernel thread.
 
@@ -2248,7 +2254,7 @@ A relationship must exist between user threads and kernel threads. 3 common ways
 
 #### Many-to-Many Model
 
-![image-20221022191444594](image-20221022191444594.png)
+![image-20221022191444594](assets/image-20221022191444594.png)
 
 > multiplexes many user-level threads to a smaller or equal number of kernel threads.
 
@@ -2341,7 +2347,7 @@ A final issue to be considered with multithreaded programs concerns communicatio
 
 - Each LWP is attached to a kernel thread
 
-![image-20221022193300525](image-20221022193300525.png)
+![image-20221022193300525](assets/image-20221022193300525.png)
 
 # Chapter 5 (Process Synchronization)
 
