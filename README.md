@@ -4,11 +4,28 @@
 
 # Class Intro
 
-> Prof:
+> Prof: Ahmad Abdullah
 >
-> Email:
+> Email: abdullah@uvic.ca
 >
 > Office Hours:
+>
+> - Monday: 11:30am - 1:00pm
+> - Wednesday: 10:00am - 11:00am
+> - Thursday: 11:30am - 1:00pm
+
+## Topics
+
+To understand how a set of computing resources can be shared safely, efficiently, and effectively among many users, including the major concepts of modern operating systems and the relationship between the OS and the architecture of computer systems.
+
+- Introduction to Operating Systems
+- Operating system structures
+- Concurrent processes and programming
+- CPU scheduling
+- Memory management and virtual memory
+- File systems and storage management
+
+
 
 > All chapters covered:  ("//" = split in slides)
 >
@@ -31,15 +48,35 @@
 > - Sub headings (ex, 1.1, 1.2, etc.) = H2
 > - Sub-Sub heading titles = H4
 
+## Course Evaluation
+
+- **Assignments (45%)**
+  - A1 (15%)
+  - A2 (15%)
+  - A3 (15%)
+- **Exams (55%)**
+  - Midterm (20%) - Feb 16th 
+  - Final Exam (35%) - TBD
+
+## lecture Slides
+
+[Lecture 0 - Introduction to Operating Systems](assets/L0.pdf) 
+
+
+
+
+
+
+
 # Midterm Review
 
 Midterm info:
 
-> **Date:** 
+> **Date:** February 16th 2023
 >
-> **Time:** 
+> **Time:** idk
 >
-> **Location:** 
+> **Location:** school 
 
 ![image-20221021130714300](assets/image-20221021130714300.png)
 
