@@ -64,7 +64,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 
 
-# Lecture 1 (01-11-2023)
+# Lecture 1 (11-01-2023)
 
 #### Some aspects of OS operation
 
@@ -151,1241 +151,29 @@ To understand how a set of computing resources can be shared safely, efficiently
 - Code in the handler for the interrupt determine actions to take.
 - After handler’s work is completed, **CPU state is restored.**
 
+# Lecture 2 (13-01-2023)
 
+#### Storage Structure
 
-# Midterm Review
+#### Storage Hierarchy
 
-Midterm info:
+#### Storage-Device Hierarchy
 
-> **Date:** February 16th 2023
->
-> **Time:** idk
->
-> **Location:** school 
+#### Caching
 
-![image-20221021130714300](assets/image-20221021130714300.png)
+#### Direct Memory Access Structure
 
-Content - Concepts portion
+#### How a Modern Computer Works
 
-> - batching processing
-> - time sharing
-> - Process states and the state transition diagram
-> - Process tree
-> - Mode switch
-> - Context switch
-> - IPC with message passing
-> - IPC with shared memory
-> - Thread
-> - User thread vs. kernel thread
-> - Thread model
-> - The critical section problem and algorithms to solve the problem
-> - Understand how to use mutex, semaphore, condition variable
+#### Computer-System Architecture
 
-Content - Programming Understanding portion
+#### Symmetric Multiprocessing Architecture
 
-> - **Processes**
->   - fork()
->   - wait(), waitpid(), kill()
->   - exec*() family
-> - **Shared Memory**
->   - shmget(), shmat(), shmdt()
-> - **Threads**
->   - pthread_attr_init(), pthread_create( ), pthread_join ()
-> - **Semaphores, Conditional variables, mutex, monitors and Proc. sync.**
->   - sem_init(), sem_wait(), sem_post(), pthread_mutex_lock(), pthread_mutex_unlock, pthread_cond_wait(), pthread_cond_signal()
+#### A Dual-Core Design
 
-### batching processing
+#### Operating System Structure
 
-Batch processing is a technique in which an Operating System collects the programs and data together in a batch before processing starts.
-
-![image-20221022163849827](assets/image-20221022163849827.png)
-
-The operatig systems does the following BEFORE the processing starts:
-
-- OS defines a Job to be started and combines resources in a single unit
-- OS keeps a number of jobs in memeory and just excecutes them
-- Jobs are processed sequentially (First come first serve)
-- job gets released from memory and a copy is saved for later
-
-| Advantages                                                   | Disadvantages                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Batch processing takes much of the work of the operator to the computer. | Difficult to debug program.                                  |
-| Increased performance as a new job get started as soon as the previous job is finished, without any manual intervention. | A job could enter an infinite loop.                          |
-|                                                              | Due to lack of protection scheme, one batch job can affect pending jobs. |
-
-#### Multiprogramming
-
-Sharing the processor, when two or more programs reside in memory at the same time.
-
-![image-20221022164509251](assets/image-20221022164509251.png)
-
-**An OS does the following activities related to multiprogramming:**
-
-- The operating system keeps several jobs in memory at a time.
-- This set of jobs is a subset of the jobs kept in the job pool.
-- The operating system picks and begins to execute one of the jobs in the memory.
-- Multiprogramming operating systems monitor the state of all active programs and system resources using memory management programs to ensures that the CPU is never idle, unless there are no jobs to process.
-
-| Advantages                                                   | Disadvantages                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| High and efficient CPU utilization.                          | CPU scheduling is required.                                  |
-| User feels that many programs are allotted CPU almost simultaneously. | To accommodate many jobs in memory, memory management is required. |
-|                                                              |                                                              |
-
-
-
-### Time Sharing (Multitasking)
-
-Multitasking is when multiple jobs are executed by the CPU simultaneously by switching between them. 
-
-![image-20221022164221070](assets/image-20221022164221070.png)
-
-**An OS does the following activities related to multitasking:**
-
-- The user gives instructions to the operating system or to a program directly, and receives an immediate response.
-- The OS handles multitasking in the way that it can handle multiple operations/executes multiple programs at a time.
-- Multitasking Operating Systems are also known as Time-sharing systems.
-- These Operating Systems were developed to provide interactive use of a computer system at a reasonable cost.
-- A time-shared operating system uses the concept of CPU scheduling and multiprogramming to provide each user with a small portion of a time-shared CPU.
-- Each user has at least one separate program in memory.
-- A program that is loaded into memory and is executing is commonly referred to as a **process**.
-- When a process executes, it typically executes for only a very short time before it either finishes or needs to perform I/O.
-- Since interactive I/O typically runs at slower speeds, it may take a long time to complete. During this time, a CPU can be utilized by another process.
-- The operating system allows the users to share the computer simultaneously. Since each action or command in a time-shared system tends to be short, only a little CPU time is needed for each user.
-- As the system switches CPU rapidly from one user/program to the next, each user is given the impression that he/she has his/her own CPU, whereas actually one CPU is being shared among many users.
-
-### Process states and the state transition diagram
-
-> **Process State**
->
-> The state may be new, ready, running,waiting,halted, and so on.
-
-A process may be in one of the following states:
-
-- **New** - Process has been created
-- **Running** - Instructions are being executed.
-- **Waiting** - The process is waiting for some event to occur (I/O or Reception)
-- **Ready** - The process is waiting to be assigned by the processor
-- **Terminated** - The process has finished execution.
-
-> ***Note:*** That only **one** process can be running on any processor at any instant.
-
-![image-20221022165137887](assets/image-20221022165137887.png)
-
-NEW => READY => RUNNING => TERMINATED
-
-NEW => READY => RUNNING => INTURUPTED => READY
-
-NEW => READY => RUNNING => WAITING => READY
-
-> **Program Counter**
->
-> The counter indicates the address of the next instruction to be executed for this process.
-
-> **CPU-scheduling information**
->
-> Includes a process priority, pointers to scheduling queues, and any other scheduling parameters.
-
-### Process Tree
-
-The creating process is called a parent process, and the new processes are called the children of that process. Each of these new processes may in turn create other processes, forming a tree of processes.
-
-![image-20221022170124300](assets/image-20221022170124300.png)
-
-- A child process may be able to obtain its resources **directly from the operating system**, or it may be constrained to a subset of the **resources of the parent process**. 
-- he parent process might pass down information to the child process.
-
-**When a process creates a new process, two possibilities for execution exist:**
-
-1. The parent continues to execute concurrently with its children.
-2. The parent waits until some or all of its children have terminated.
-
-**There are also two address-space possibilities for the new process:**
-
-1. The child process is a duplicate of the parent process (it has the same program and data as the parent).
-2. The child process has a new program loaded into it.
-
-**A parent may terminate the execution of one of its children beacuse:**
-
-- The child has <u>exceeded its usage of some of the resources</u> that it has been allocated. (To determine whether this has occurred, the parent must have a mechanism to inspect the state of its children.)
-- The task assigned to the child is <u>no longer required.</u>
-- <u>The parent is exiting</u>, and the operating system does not allow a child to continue if its parent terminates.
-
-### Mode switch (User vs kernel mode)
-
-### Context switch
-
-> **Process Control Block (PCB)**
->
-> A block of memory that hold information about the current process.
-
-![image-20221022172022654](assets/image-20221022172022654.png)
-
-**Each PCB can hold info on the following:**
-
-- <u>Process state</u> - State status
-- <u>Program counter</u> - address to the next instruction
-- <u>CPU Registers</u> - Any allocated registers
-- <u>CPU-Scheduling</u> - Process pointers and priority
-- <u>Memory management info</u> - contains different memory table info
-- <u>accounting information</u> - Realtime limits
-- <u>I/O status</u> - List of all IO allocated
-
-![image-20221022172428047](assets/image-20221022172428047.png)
-
-Context switching is loading Info into the PCB and passing it from process to processes.
-
-![image-20221022172552250](assets/image-20221022172552250.png)
-
-### IPC (Inter-process Communication) with message passing
-
-> **IPC** **(Inter-process Communication)**
->
-> Cooperating processes require an inter-process communication (IPC) mechanism that will allow them to exchange data and information.
-
-> **Message Passing**
->
-> message-passing model, communication takes place by means of messages exchanged between the cooperating processes.
->
-> Message passing provides a mechanism to allow processes to communicate and to synchronize their actions without sharing the same address space.
-
-| Advantages                                    | Disadvantages                                            |
-| --------------------------------------------- | -------------------------------------------------------- |
-| Useful for sending small amounts of data/info | Slow - Uses system calls instead of shared memory space. |
-| Easier to implement                           |                                                          |
-| No need to share address space                |                                                          |
-
-![image-20221022173321505](assets/image-20221022173321505.png)
-
-- Messages sent by a process can be either fixed or variable in size.
-  - If only fixed-sized messages can be sent, the system-level implementation is straightforward. 
-    - makes the task of programming more difficult
-
-**Methods for logically implementing a link and the send()/receive() operations:**
-
-- Direct or indirect communication.
-- Synchronous or asynchronous communication.
-- Automatic or explicit buffering.
-
-#### Naming
-
-Processes that want to communicate must have a way to refer to each other. They can use either direct or indirect communication.
-
-##### Direct Communication
-
-Explicitly name the recipient or sender of the communication needed.
-
-```c
-send(P, message); // Send message to process P
-recieve(Q, message); // Recieve messages from process Q
-```
-
-**Communication link Properties:**
-
-- A link is established automatically between every pair of processes
-
-- A link is associated with exactly two processes.
-- Between each pair of processes, there exists exactly one link.
-
-**Asymmetric vs Symmetric** 
-
-```c
-//Symmetric
-send(P, message); // Send message to process P.
-recieve(Q, message); // Recieve messages from process Q.
-```
-
-```c
-// Asymmetric
-send(P, message); // Send message to process P.
-recieve(message); // Recieve messages without explicit naming of sender.
-```
-
-The disadvantages of symmetric and asymmetric is a <u>lack of modularity</u> .
-
-##### Indirect Communication
-
-messages are sent to and received from mailboxes, or ports.
-
-```c
-send(A, message); // Send message to mailbox A
-recieve(A, message); // Recieve messages from mailbox A
-```
-
-**Communication link Properties:**
-
-- A link is established between a pair of processes only if both members of the pair have a shared mailbox.
-- A link may be associated with more than two processes.
-- Between each pair of communicating processes, a number of different links may exist, with each link corresponding to one mailbox.
-
-***Ex. Who gets the message?***
-
-```c
-P1 => send(A, message); // Send message to mailbox A
-P2 => recieve(A, message); // Recieve messages from mailbox A
-P3 => recieve(A, message); // Recieve messages from mailbox A
-```
-
-**The answer depends on which of the following methods we choose:**
-
-- Allow a link to be associated with two processes at most.
-- Allow at most one process at a time to execute a receive() operation.
-- Allow the system to select arbitrarily which process will receive the message (that is, either P2 or P3,but not both, will receive the message).The system may define an algorithm for selecting which process will receive the message (for example, *round robin*, where processes take turns receiving messages). The system may identify the receiver to the sender.
-
-**If the mailbox is owned by:**
-
-- **Operating system** - Must provide a mechanism to do the following
-  - Create a new mailbox.
-  - Send and Receive through the mailbox.
-  - Delete the mailbox.
-- **Process** - We distinguish between the owner (which can only receive messages through this mailbox) and the user (which can only send messages to the mailbox).
-
-#### Synchronization of Process Communication
-
-Communication takes place between two system calls:
-
-- Send()
-- Receive()
-
-**Blocking (synchronous) vs Non-blocking (Asynchronous)**
-
-- **Blocking**
-  - **Send** - The sending process is blocked until the message is received by the receiving process or by the mailbox.
-  - **Receive** - The receiver blocks until a message is available.
-- **Non-Blocking**
-  - **Send** - The sending process sends the message and resumes operation.
-  - **Receive** - The receiver retrieves either a valid message or a null.
-
-#### Buffering
-
-Whether communication is direct or indirect, messages exchanged by communicating processes reside in a temporary queue.
-
-**queues can be implemented in three ways:**
-
-- **Zero capacity** **(NON BUFFERING)** - The queue has a maximum length of zero; thus,the link cannot have any messages waiting in it. In this case, the sender must block until the recipient receives the message.
-- **Bounded capacity** **(BUFFERING)** - The queue has finite length n; thus, at most n messages can reside in it.
-- **Unbounded capacity** **(BUFFERING)** - The queue’s length is potentially infinite; thus, any number of messages can wait in it. The sender never blocks.
-
-### IPC (Inter-process Communication) with shared memory
-
-> **Shared Memory**
->
-> A region of memory that is shared by cooperating processes is established. 
-
-- The operating system tries to prevent one process from accessing another process’s memory. Shared memory requires that two or more processes agree to <u>remove this restriction</u>.
-- The Process is also responsible for ensuring that they are not writing to the same location simultaneously.
-
-#### Producer - Consumer Problem 
-
-A <u>producer</u> process produces information that is consumed by a <u>consumer</u> process.
-
-The producer and consumer must be synchronized, so that the consumer does not try to consume an item that has not yet been produced.
-
-##### Bounded vs Unbounded Buffers
-
-- **Unbounded -** Places no practical limit on the size of the buffer.
-- **Bounded -** Assumes a fixed buffer size. 
-
-### Threads
-
-#### Overview
-
-> **Thread**
->
-> A thread is a basic unit of CPU utilization and comprises of:
->
-> - Thread ID
-> - Program Counter
-> - A register Set
-> - A stack data structure
-
-##### Motivation
-
-![image-20221022184149838](assets/image-20221022184149838.png)
-
-With threading a single application or program can:
-
-- Display images.
-- display text.
-- Retrieve data from the network.
-- And more.
-
-Like IPC threads help RPC servers handle concurrent connections.
-
-![image-20221022184424212](assets/image-20221022184424212.png)
-
-##### Benefits of threading
-
-- **Responsiveness** - keep program running even if blocked.
-- **Resource sharing** - threads share the memory and the resources of the process to which they belong by default.
-- **Economy** - because threads share the resources of the process to which they belong, it is more economical to create and context-switch threads.
-- **scalability** - threads may be running in parallel on different processing cores.
-
-#### Multicore Programming
-
-![image-20221022184810891](assets/image-20221022184810891.png)
-
-##### Challenges in multicore Programming
-
-five areas present challenges in programming for multicore
-systems:
-
-- **Identifying tasks -**  examining applications to find areas that can be divided into separate
-- **Balance -** ensure that the tasks perform equal work of equal value.
-- **Data Splitting -** data accessed and manipulated by the tasks must be divided to run on separate cores.
-- **Data dependency -** the data accessed by the tasks must be examined for dependencies between two or more tasks.
-- **Testing a debugging -** when a program is running in parallel on multiple cores, many different execution paths are possible.
-
-##### Types of Parallelism (Data vs Task)
-
-> **Data Parallelism**
->
-> Focuses on distributing subsets of the same data across multiple computing cores and performing the same operation on each core.
-
-> **Task Parallelism**
->
-> Involves distributing not data but tasks (threads) across
-> multiple computing cores. Each thread is performing a unique operation.
-
-### User thread vs. kernel thread
-
-> **User Threads**
->
-> User threads are supported above the kernel and are managed without kernel support.
-
-> **Kernel Threads**
->
-> kernel threads are supported and managed directly by the operating system.
->
-> ***Note:*** Windows, Linux, Mac OS X,and Solaris - support kernel threads.
-
-### Thread model
-
-A relationship must exist between user threads and kernel threads. 3 common ways:
-
-- many-to-one model
-- one-to-one model
-- many-to-many model
-
-#### Many-to-One Model 
-
-![image-20221022190333089](assets/image-20221022190333089.png)
-
-> Maps many user-level threads to one kernel thread.
-
-| Advantages                                                   | Disadvantages                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Thread management is done by the thread library in user space, so it is efficient | The entire process will block if a thread makes a blocking system call. |
-|                                                              | because only one thread can access the kernel at a time,multiple threads are unable to run in parallel on multicore systems. |
-
-
-
-#### One-to-One Model
-
-![image-20221022190345411](assets/image-20221022190345411.png)
-
->   Maps each user thread to a kernel thread.
-
-| Advantages                                                   | Disadvantages                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| It provides more concurrency than the many-to-one model by allowing another thread to run when a thread makes a blocking system call. | creating a user thread requires creating the corresponding kernel thread. (High overhead) |
-| Allows multiple threads to run in parallel on multiprocessors. |                                                              |
-
-
-
-#### Many-to-Many Model
-
-![image-20221022191444594](assets/image-20221022191444594.png)
-
-> multiplexes many user-level threads to a smaller or equal number of kernel threads.
-
-| Advantages                                                   | Disadvantages |
-| ------------------------------------------------------------ | ------------- |
-| Developers can create as many user threads as necessary.     | None          |
-| Corresponding kernel threads can run in parallel on a multiprocessor. | None          |
-| when a thread performs a blocking system call, the kernel can schedule another thread for execution. | None          |
-
-### The critical section problem and algorithms to solve the problem
-
-> **Critical Section Problem**
->
-> used to design a protocol followed by a group of processes, so that when one process has entered its critical section, no other process is allowed to execute in its critical section.
-
-> **critical section**
->
-> The segment of code where processes access shared resources, such as common variables and files, and perform write operations on them.
-
-```c
-While(True){
-    // Aquire lock
-    
-    // Critical section
-    
-    // Disable lock
-    
-    // Exit()
-}
-```
-
-
-
-#### Solutions to the critical section problem
-
-##### Methods
-
-- **Mutual Exclusion** - When one process is executing in its critical section, no other process is allowed to execute in its critical section.
-- **Progress** - When no process is executing in its critical section, and there exists a process that wishes to enter its critical section, it should not have to wait indefinitely to enter it.
-- **Bounded waiting** - There must be a <u>bound on the number of times a process is allowed to execute</u> in its critical section, after another process has requested to enter its critical section and before that request is accepted.
-
-##### Implementations (Locks)
-
-- **test_and_set** - Uses boolean True/False.
-- **Mutex Locks** - Software method that provides the `acquire()` and `release()` functions that execute atomically.
-- **Semaphores** - More sophisticated methods that utilize the `wait()` and `signal()` operations that execute atomically on Semaphore `S`, which is an integer variable.
-- **Conditional Variables** -  Utilizes a queue of processes that are waiting to enter the critical section.
-
-### Understand how to use mutex, semaphore, condition variable (IMPORTANT)
-
-#### Mutex
-
-> **Mutex (Mutual Exclusion)**
->
-> to protect critical regions and thus prevent race conditions. Also called a spin lock.
-
-- A process that attempts to acquire an unavailable lock is blocked until the lock is released.
-
-```C
-//aquire a lock
-Aquire(){
-    while(!available){
-        //Wait
-        available = false;
-    }
-}
-
-// release a lock
-release(){
-    available = true;
-}
-```
-
-| Advantages                                                   | Disadvantages                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Easy to implement                                            | Requires busy waiting - other processes loop waiting for the mutex to unlock |
-| no context switch is required when a process must wait on a lock |                                                              |
-
-#### Semaphores
-
-> Semaphores
->
-> is an integer variable that, apart from initialization, is accessed only through two standard atomic operations:
->
-> - wait()
-> - Signal()
-
-```c
-//Definition of wait()
-wait(S){
-    while(S <= 0){
-        //busy wait
-        S--;
-    }
-}
-```
-
-```c
-//Definition of Signal()
-signal(S){
-    S++;
-}
-```
-
-- All modifications to the integer value of the semaphore in the wait() and signal() operations must be executed indivisibly. That is, when one process modifies the semaphore value, no other process can simultaneously modify that same semaphore value. 
-- Signal and wait must be executed without interruption.
-
-> **Counting semaphores**
->
-> The value of a counting semaphore can range over an unrestricted domain.
-
-> **Binary semaphores**
->
-> The value of a binary semaphore can range only between 0 and 1.
-
-#### Conditional variables
-
-##### Why conditional variables instead of mutex?
-
-When we need to conditionally check if some condition is met, we do not want to use spin look because it wastes CPU time. A condition variable is a way to achieve the same goal without continually polling.
-
-- Always use in conjunction to a mutex lock
-
-## // Programming Section
-
-### Processes
-
-#### fork()
-
-> **Description:**
->
->  Fork system call is used for creating a new process, which is called ***child process\***, which runs concurrently with the process that makes the fork() call (parent process). After a new child process is created, both processes will execute the next instruction following the fork() system call. A child process uses the same pc(program counter), same CPU registers, same open files which use in the parent process.
->
-> **Return Integer Values:**
->
-> - **Negative** - creation of child process failed
-> - **Zero** - Created a child process successfully
-> - **Positive** - Returned to parent or caller, the positive  return number is the PID of the child process.
->
-> **Note:** Will not run on a Windows environment.
-
-##### Fork the current program
-
-```c
-#include <stdio.h> 
-#include <sys/types.h> 
-#include <unistd.h> 
-#include <stdlib.h>
-int main() 
-{ 
-    fork(); 
-    fork(); 
-    fork(); 
-    printf("Hello world!\n");
-    return 0; 
-} 
-```
-
-Output:
-
-```bash
-Hello world!
-Hello world!
-Hello world!
-Hello world!
-Hello world!
-Hello world!
-Hello world!
-Hello world!
-```
-
-##### Fork with Child/Parent conditional
-
-```c
-#include <sys/types.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-int main(int argc, char *argv[])
-{
-   printf("I am: %d\n", (int) getpid());
-
-   pid_t pid = fork();
-   printf("fork returned: %d\n", (int) pid);
-
-   if (pid < 0) { /* error occurred */
-   	perror("Fork failed");
-   }
-   if (pid == 0) { /* child process */
-   	printf("I am the child with pid %d\n", (int) getpid());
-               printf("Child process is exiting\n");
-               exit(0);
-       }
-   /* parent process */
-   printf("I am the parent waiting for the child process to end\n");
-       wait(NULL);
-       printf("parent process is exiting\n");
-       return(0);
-}
-```
-
-Output:
-
-```bash
-I am: 2337
-fork returned: 2338
-I am the parent waiting for the child process to end
-fork returned: 0
-I am the child with pid 2338
-Child process is exiting
-parent process is exiting
-```
-
-#### wait()
-
-> **Description:**
->
-> A call to wait() blocks the calling process until one of its child processes exits or a signal is received. After child process terminates, parent ***continues*** its execution after wait system call instruction. Child process may terminate due to any of these:
->
-> - It calls exit();
-> - It returns (an int) from main
-> - It receives a signal (from the OS or another process) whose default action is to terminate.
->
-> **Parameters:**
->
-> - NULL -  indicates that we will not know about the state of the child’s process’s transition.
->
-> **Return Values:**
->
-> - No return values
->
-> **Note:** This call placed into the parent section of code makes the child go/run first.
-
-```c
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <sys/wait.h>
-int main(){
-    pid_t p;
-    printf("Before fork\n");
-    p=fork();
-    //Child
-    if(p==0){
-        printf("I am a child");
-        printf("my parent is waiting");
-    }
-    //Parent
-    else{
-        wait(NULL);
-        printf("My child ID is..");
-    }
-    printf("common");
-}
-```
-
-Output:
-
-```bash
-Befrore fork
-I am a child
-my parent is waiting
-common
-my child ID is...
-common
-```
-
-
-
-#### waitpid()
-
-> **Description:**
->
-> system call suspends execution of the current process until a child specified by *pid* argument has changed state. By default, **waitpid**() waits only for terminated children
->
-> **Parameters:**
->
-> - **Less than -1** - meaning wait for any child process whose process group ID is equal to the absolute value of *pid*
-> - **-1** - wait for any child processes
-> - **0** - wait for any child process whose process group ID is equal to that of the calling process.
-> - **Greater than 0** - wait for the child whose process ID is equal to the value of pid.
->
-> **Return Values:**
->
-> - on success, returns the process ID of the child whose state has changed 
->
-> - **-1** - On error
->
-> **Note:** Each of these calls sets *errno* to an appropriate value in the case of an error.
-
-Usage same as `wait()` so no example.
-
-#### kill()
-
-> **Description:**
->
->  A command for you to kill a running process using a process ID.
->
-> **Parameters:**
->
-> - PID - PID you wnt to kill
-> - Sig - signal you want to send
->
-> **Return Values:**
->
-> - **-1** - on error
-> - **0** - on success
->
-> **Optional sig kill options:**
->
-> - SIGNULL - 0 - Check access to pid
-> - SIGHUP - 1 - Terminate; can be trapped
-> - SIGINT - 2 -  Terminate; can be trapped
-> - SIGQUIT - 3 - Terminate with core dump; can be trapped
-> - SIGKILL - 9 - Forced termination; cannot be trapped
-> - SIGTERM - 15 - Terminate; can be trapped
-> - SIGSTOP - 24 - Pause the process; cannot be trapped. (This is default if signal not provided)
-> - SIGTSTP - 25 - Stop/pause the process; can be trapped
-> - SIGCONT - 26 - Run a stopped process
->
-> ***Note:***  the specific mapping between numbers and signals can vary between Unix implementations.
-
-#### exec*() family
-
-> **Description:**
->
-> The exec family of functions replaces the current running process with a new process. It can be used to run a C program by using another C program. It comes under the header file **unistd.h.**
->
-> - execl() 
-> - execlp()
-> - execle()
-> - execv()
-> - execvp()
-> - execve()
-
-##### execl() 
-
-> e*xecl()* receives the location of the executable file as its first argument. The next arguments will be available to the file when it’s executed. The last argument has to be *NULL*:
-
-Function Header:
-
-```c
-int execl(const char *pathname, const char *arg, ..., NULL)
-```
-
-Example Usage:
-
-```c
-#include <unistd.h>
-
-int main(void) {
-    char *file = "/usr/bin/echo";
-    char *arg1 = "Hello world!";
-	
-    execl(file, file, arg1, NULL);
-
-    return 0;
-}
-```
-
-Output:
-
-```bash
-$ gcc execl.c -o execl
-$ ./execl
-Hello world!
-```
-
-##### execlp()
-
-> *execlp()* is very similar to *execl()*. However, *execlp()* uses the PATH environment variable to look for the file. Therefore, the path to the executable file is not needed.
-
-Function Header:
-
-```c
-int execlp(const char *file, const char *arg, ..., NULL)
-```
-
-Example Usage:
-
-```c
-#include <unistd.h>
-
-int main(void) {
-    char *file = "echo";
-    char *arg1 = "Hello world!";
-
-    execlp(file, file, arg1, NULL);
-    return 0;
-}
-```
-
-Output:
-
-```bash
-$ gcc execlp.c -o execlp
-$ ./execlp
-Hello world!
-```
-
-##### execle()
-
-> If we use *execle(),* we can pass environment variables to the function, and it’ll use them:
-
-Function Header:
-
-```c
-int execle(const char *pathname, const char *arg, ..., NULL, char *const envp[])
-```
-
-Example Usage:
-
-```c
-#include <unistd.h>
-
-int main(void) {
-    char *file = "/usr/bin/bash";
-    char *arg1 = "-c";
-    char *arg2 = "echo $ENV1 $ENV2!";
-    char *const env[] = {"ENV1=Hello", "ENV2=World", NULL};
-	
-    execle(file, file, arg1, arg2, NULL, env);
-
-    return 0;
-}
-```
-
-Output:
-
-```bash
-$ gcc execle.c -o execle
-$ ./execle
-Hello World!
-```
-
-##### execv()
-
-> *execv()*, unlike *execl()*, receives a vector of arguments that will be available to the executable file. In addition, the last element of the vector has to be NULL:
-
-Function Header:
-
-```c
-int execv(const char *pathname, char *const argv[])
-```
-
-Example Usage:
-
-```c
-#include <unistd.h>
-
-int main(void) {
-    char *file = "/usr/bin/echo";
-    char *const args[] = {"/usr/bin/echo", "Hello world!", NULL};
-	
-    execv(file, args);
-
-    return 0;
-}
-```
-
-Output:
-
-```bash
-$ gcc execv.c -o execv
-$ ./execv
-Hello world!
-```
-
-##### execvp()
-
-> Just like *execlp()*, *execvp()* looks for the program in the PATH environment variable:
-
-Function Header:
-
-```c
-int execvp(const char *file, char *const argv[])
-```
-
-Example Usage:
-
-```c
-#include <unistd.h>
-
-int main(void) {
-    char *file = "echo";
-    char *const args[] = {"/usr/bin/echo", "Hello world!", NULL};
-	
-    execvp(file, args);
-
-    return 0;
-}
-```
-
-Output:
-
-```bash
-$ gcc execvp.c -o execvp
-$ ./execvp
-Hello world!
-```
-
-##### execve()
-
-> We can pass environment variables to *execve()*. In addition, the arguments need to be inside a NULL-terminated vector:
-
-Function Header:
-
-```c
-int execve(const char *pathname, char *const argv[], char *const envp[])
-```
-
-Example Usage:
-
-```c
-#include <unistd.h>
-
-int main(void) {
-    char *file = "/usr/bin/bash";
-    char *const args[] = {"/usr/bin/bash", "-c", "echo Hello $ENV!", NULL};
-    char *const env[] = {"ENV=World", NULL};
-	
-    execve(file, args, env);
-
-    return 0;
-}
-```
-
-Output:
-
-```bash
-$ gcc execve.c -o execve
-$ ./execve
-Hello World!
-```
-
-
-
-### Shared memory (IPC system calls)
-
-> **Description:**
->
-> through shared memory is a concept where two or more process can access the common memory. And communication is done via this shared memory where changes made by one process can be viewed by another process.
->
-> The problem with pipes, fifo and message queue – is that for two process to exchange information. The information has to go through the kernel.
->
-> - Server reads from the input file.
-> - The server writes this data in a message using either a pipe, fifo or message queue.
-> - The client reads the data from the IPC channel,again requiring the data to be copied from kernel’s IPC buffer to the client’s buffer.
-> - Finally the data is copied from the client’s buffer.
->
-> A total of four copies of data are required (2 read and 2 write). So, shared memory provides a way by letting two or more processes share a memory segment. With Shared Memory the data is only copied twice – from input file into shared memory and from shared memory to the output file.
-
-#### shmget()
-
-> **Description:**
->
-> upon successful completion, shmget() returns an identifier for the shared memory segment.
-
-#### shmat()
-
-> **Description:**
->
-> Before you can use a shared memory segment, you have to attach yourself to it using shmat().
-
-#### shmdt()
-
-> **Description:** 
->
-> When you’re done with the shared memory segment, your program should detach itself from it using shmdt().
-
-#### Example Using shmget(), shmat() and shmdt()
-
-```C
-//SHARED MEMORY FOR WRITER PROCESS
-#include <iostream>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <stdio.h>
-using namespace std;
-
-int main()
-{
-	// ftok to generate unique key
-	key_t key = ftok("shmfile",65);
-
-	// shmget returns an identifier in shmid
-	int shmid = shmget(key,1024,0666|IPC_CREAT);
-
-	// shmat to attach to shared memory
-	char *str = (char*) shmat(shmid,(void*)0,0);
-
-	cout<<"Write Data : ";
-	gets(str);
-
-	printf("Data written in memory: %s\n",str);
-	
-	//detach from shared memory
-	shmdt(str);
-
-	return 0;
-}
-
-```
-
-```c
-// SHARED MEMORY FOR READER PROCESS
-#include <iostream>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <stdio.h>
-using namespace std;
-
-int main()
-{
-	// ftok to generate unique key
-	key_t key = ftok("shmfile",65);
-
-	// shmget returns an identifier in shmid
-	int shmid = shmget(key,1024,0666|IPC_CREAT);
-
-	// shmat to attach to shared memory
-	char *str = (char*) shmat(shmid,(void*)0,0);
-
-	printf("Data read from memory: %s\n",str);
-	
-	//detach from shared memory
-	shmdt(str);
-	
-	// destroy the shared memory
-	shmctl(shmid,IPC_RMID,NULL);
-	
-	return 0;
-}
-
-```
-
-Output Writer:
-
-```bash
-./writer
-Write Data : Geeks for Geeks
-Data written in memory: Geeks for Geeks
-```
-
-Output Reader:
-
-```bash
-./reader
-Data read from memory: Geeks for Geeks
-```
-
-
-
-### Threads (IMPORTANT)
-
-> **Description:**
->
-> It allows us to create multiple threads for concurrent process flow. It is most effective on multiprocessor or multi-core systems where threads can be implemented on a kernel-level for achieving the speed of execution. Gains can also be found in uni-processor systems by exploiting the latency in IO or other system functions that may halt a process.
-
-#### pthread_attr_init()
-
-> function initializes the thread attributes object pointed to by attr with default attribute values.
-
-Function Header:
-
-```C
-int pthread_attr_init(pthread_attr_t *attr);
-```
-
-
-
-#### pthread_create()
-
-> **Description:**
->
-> used to create a new thread.
->
-> **Parameters:**
->
-> - **thread:** pointer to an unsigned integer value that returns the thread id of the thread created.
-> - **attr:** pointer to a structure that is used to define thread attributes like detached state, scheduling policy, stack address, etc. Set to NULL for default thread attributes.
-> - **start_routine:** pointer to a subroutine that is executed by the thread. The return type and parameter type of the subroutine must be of type void *. The function has a single attribute but if multiple values need to be passed to the function, a struct must be used.
-> - **arg:** pointer to void that contains the arguments to the function defined in the earlier argument.
-
-Function Header:
-
-```c
-int pthread_create(pthread_t * thread, const pthread_attr_t * attr, void * (*start_routine)(void *), void *arg);
-```
-
-#### pthread_join ()
-
-> **Description:**
->
-> used to wait for the termination of a thread.
->
-> **Parameters:**
->
-> - **th:** thread id of the thread for which the current thread waits.
-> - **thread_return:** pointer to the location where the exit status of the thread mentioned in th is stored.
-
-Function Header:
-
-```c
-int pthread_join(pthread_t th, void **thread_return);
-```
-
-#### Example Using pthread_join() and pthread_create()
-
-```c
-// C program to show thread functions
-
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-void* func(void* arg)
-{
-	// detach the current thread
-	// from the calling thread
-	pthread_detach(pthread_self());
-
-	printf("Inside the thread\n");
-
-	// exit the current thread
-	pthread_exit(NULL);
-}
-
-void fun()
-{
-	pthread_t ptid;
-
-	// Creating a new thread
-	pthread_create(&ptid, NULL, &func, NULL);
-	printf("This line may be printed"
-		" before thread terminates\n");
-
-	// The following line terminates
-	// the thread manually
-	// pthread_cancel(ptid);
-
-	// Compare the two threads created
-	if(pthread_equal(ptid, pthread_self())
-		printf("Threads are equal\n");
-	else
-		printf("Threads are not equal\n");
-
-	// Waiting for the created thread to terminate
-	pthread_join(ptid, NULL);
-
-	printf("This line will be printed"
-		" after thread ends\n");
-
-	pthread_exit(NULL);
-}
-
-// Driver code
-int main()
-{
-	fun();
-	return 0;
-}
-
-```
-
-Output:
-
-```bash
-This line may be printed before thread terminates
-Threads are not equal
-Inside the thread
-This line will be printed after thread ends
-```
-
-### Semaphores, Conditional variables, mutex, monitors and Proc. sync. (IMPORTANT)
-
-#### sem_init()
-
-#### sem_wait()
-
-#### sem_post()
-
-#### pthread_mutex_lock()
-
-#### pthread_mutex_unlock()
-
-#### pthread_cond_wait()
-
-#### pthread_cond_signal()
+#### Memory Layout for Multi-programmed System
 
 
 
@@ -2588,3 +1376,1240 @@ signal(S){
 > The value of a binary semaphore can range only between 0 and 1.
 
 ## 5.7 Classic Problems of Synchronization
+
+
+
+# Midterm Review
+
+Midterm info:
+
+> **Date:** February 16th 2023
+>
+> **Time:** idk
+>
+> **Location:** school 
+
+![image-20221021130714300](assets/image-20221021130714300.png)
+
+Content - Concepts portion
+
+> - batching processing
+> - time sharing
+> - Process states and the state transition diagram
+> - Process tree
+> - Mode switch
+> - Context switch
+> - IPC with message passing
+> - IPC with shared memory
+> - Thread
+> - User thread vs. kernel thread
+> - Thread model
+> - The critical section problem and algorithms to solve the problem
+> - Understand how to use mutex, semaphore, condition variable
+
+Content - Programming Understanding portion
+
+> - **Processes**
+>   - fork()
+>   - wait(), waitpid(), kill()
+>   - exec*() family
+> - **Shared Memory**
+>   - shmget(), shmat(), shmdt()
+> - **Threads**
+>   - pthread_attr_init(), pthread_create( ), pthread_join ()
+> - **Semaphores, Conditional variables, mutex, monitors and Proc. sync.**
+>   - sem_init(), sem_wait(), sem_post(), pthread_mutex_lock(), pthread_mutex_unlock, pthread_cond_wait(), pthread_cond_signal()
+
+### batching processing
+
+Batch processing is a technique in which an Operating System collects the programs and data together in a batch before processing starts.
+
+![image-20221022163849827](assets/image-20221022163849827.png)
+
+The operatig systems does the following BEFORE the processing starts:
+
+- OS defines a Job to be started and combines resources in a single unit
+- OS keeps a number of jobs in memeory and just excecutes them
+- Jobs are processed sequentially (First come first serve)
+- job gets released from memory and a copy is saved for later
+
+| Advantages                                                   | Disadvantages                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Batch processing takes much of the work of the operator to the computer. | Difficult to debug program.                                  |
+| Increased performance as a new job get started as soon as the previous job is finished, without any manual intervention. | A job could enter an infinite loop.                          |
+|                                                              | Due to lack of protection scheme, one batch job can affect pending jobs. |
+
+#### Multiprogramming
+
+Sharing the processor, when two or more programs reside in memory at the same time.
+
+![image-20221022164509251](assets/image-20221022164509251.png)
+
+**An OS does the following activities related to multiprogramming:**
+
+- The operating system keeps several jobs in memory at a time.
+- This set of jobs is a subset of the jobs kept in the job pool.
+- The operating system picks and begins to execute one of the jobs in the memory.
+- Multiprogramming operating systems monitor the state of all active programs and system resources using memory management programs to ensures that the CPU is never idle, unless there are no jobs to process.
+
+| Advantages                                                   | Disadvantages                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| High and efficient CPU utilization.                          | CPU scheduling is required.                                  |
+| User feels that many programs are allotted CPU almost simultaneously. | To accommodate many jobs in memory, memory management is required. |
+|                                                              |                                                              |
+
+
+
+### Time Sharing (Multitasking)
+
+Multitasking is when multiple jobs are executed by the CPU simultaneously by switching between them. 
+
+![image-20221022164221070](assets/image-20221022164221070.png)
+
+**An OS does the following activities related to multitasking:**
+
+- The user gives instructions to the operating system or to a program directly, and receives an immediate response.
+- The OS handles multitasking in the way that it can handle multiple operations/executes multiple programs at a time.
+- Multitasking Operating Systems are also known as Time-sharing systems.
+- These Operating Systems were developed to provide interactive use of a computer system at a reasonable cost.
+- A time-shared operating system uses the concept of CPU scheduling and multiprogramming to provide each user with a small portion of a time-shared CPU.
+- Each user has at least one separate program in memory.
+- A program that is loaded into memory and is executing is commonly referred to as a **process**.
+- When a process executes, it typically executes for only a very short time before it either finishes or needs to perform I/O.
+- Since interactive I/O typically runs at slower speeds, it may take a long time to complete. During this time, a CPU can be utilized by another process.
+- The operating system allows the users to share the computer simultaneously. Since each action or command in a time-shared system tends to be short, only a little CPU time is needed for each user.
+- As the system switches CPU rapidly from one user/program to the next, each user is given the impression that he/she has his/her own CPU, whereas actually one CPU is being shared among many users.
+
+### Process states and the state transition diagram
+
+> **Process State**
+>
+> The state may be new, ready, running,waiting,halted, and so on.
+
+A process may be in one of the following states:
+
+- **New** - Process has been created
+- **Running** - Instructions are being executed.
+- **Waiting** - The process is waiting for some event to occur (I/O or Reception)
+- **Ready** - The process is waiting to be assigned by the processor
+- **Terminated** - The process has finished execution.
+
+> ***Note:*** That only **one** process can be running on any processor at any instant.
+
+![image-20221022165137887](assets/image-20221022165137887.png)
+
+NEW => READY => RUNNING => TERMINATED
+
+NEW => READY => RUNNING => INTURUPTED => READY
+
+NEW => READY => RUNNING => WAITING => READY
+
+> **Program Counter**
+>
+> The counter indicates the address of the next instruction to be executed for this process.
+
+> **CPU-scheduling information**
+>
+> Includes a process priority, pointers to scheduling queues, and any other scheduling parameters.
+
+### Process Tree
+
+The creating process is called a parent process, and the new processes are called the children of that process. Each of these new processes may in turn create other processes, forming a tree of processes.
+
+![image-20221022170124300](assets/image-20221022170124300.png)
+
+- A child process may be able to obtain its resources **directly from the operating system**, or it may be constrained to a subset of the **resources of the parent process**. 
+- he parent process might pass down information to the child process.
+
+**When a process creates a new process, two possibilities for execution exist:**
+
+1. The parent continues to execute concurrently with its children.
+2. The parent waits until some or all of its children have terminated.
+
+**There are also two address-space possibilities for the new process:**
+
+1. The child process is a duplicate of the parent process (it has the same program and data as the parent).
+2. The child process has a new program loaded into it.
+
+**A parent may terminate the execution of one of its children beacuse:**
+
+- The child has <u>exceeded its usage of some of the resources</u> that it has been allocated. (To determine whether this has occurred, the parent must have a mechanism to inspect the state of its children.)
+- The task assigned to the child is <u>no longer required.</u>
+- <u>The parent is exiting</u>, and the operating system does not allow a child to continue if its parent terminates.
+
+### Mode switch (User vs kernel mode)
+
+### Context switch
+
+> **Process Control Block (PCB)**
+>
+> A block of memory that hold information about the current process.
+
+![image-20221022172022654](assets/image-20221022172022654.png)
+
+**Each PCB can hold info on the following:**
+
+- <u>Process state</u> - State status
+- <u>Program counter</u> - address to the next instruction
+- <u>CPU Registers</u> - Any allocated registers
+- <u>CPU-Scheduling</u> - Process pointers and priority
+- <u>Memory management info</u> - contains different memory table info
+- <u>accounting information</u> - Realtime limits
+- <u>I/O status</u> - List of all IO allocated
+
+![image-20221022172428047](assets/image-20221022172428047.png)
+
+Context switching is loading Info into the PCB and passing it from process to processes.
+
+![image-20221022172552250](assets/image-20221022172552250.png)
+
+### IPC (Inter-process Communication) with message passing
+
+> **IPC** **(Inter-process Communication)**
+>
+> Cooperating processes require an inter-process communication (IPC) mechanism that will allow them to exchange data and information.
+
+> **Message Passing**
+>
+> message-passing model, communication takes place by means of messages exchanged between the cooperating processes.
+>
+> Message passing provides a mechanism to allow processes to communicate and to synchronize their actions without sharing the same address space.
+
+| Advantages                                    | Disadvantages                                            |
+| --------------------------------------------- | -------------------------------------------------------- |
+| Useful for sending small amounts of data/info | Slow - Uses system calls instead of shared memory space. |
+| Easier to implement                           |                                                          |
+| No need to share address space                |                                                          |
+
+![image-20221022173321505](assets/image-20221022173321505.png)
+
+- Messages sent by a process can be either fixed or variable in size.
+  - If only fixed-sized messages can be sent, the system-level implementation is straightforward. 
+    - makes the task of programming more difficult
+
+**Methods for logically implementing a link and the send()/receive() operations:**
+
+- Direct or indirect communication.
+- Synchronous or asynchronous communication.
+- Automatic or explicit buffering.
+
+#### Naming
+
+Processes that want to communicate must have a way to refer to each other. They can use either direct or indirect communication.
+
+##### Direct Communication
+
+Explicitly name the recipient or sender of the communication needed.
+
+```c
+send(P, message); // Send message to process P
+recieve(Q, message); // Recieve messages from process Q
+```
+
+**Communication link Properties:**
+
+- A link is established automatically between every pair of processes
+
+- A link is associated with exactly two processes.
+- Between each pair of processes, there exists exactly one link.
+
+**Asymmetric vs Symmetric** 
+
+```c
+//Symmetric
+send(P, message); // Send message to process P.
+recieve(Q, message); // Recieve messages from process Q.
+```
+
+```c
+// Asymmetric
+send(P, message); // Send message to process P.
+recieve(message); // Recieve messages without explicit naming of sender.
+```
+
+The disadvantages of symmetric and asymmetric is a <u>lack of modularity</u> .
+
+##### Indirect Communication
+
+messages are sent to and received from mailboxes, or ports.
+
+```c
+send(A, message); // Send message to mailbox A
+recieve(A, message); // Recieve messages from mailbox A
+```
+
+**Communication link Properties:**
+
+- A link is established between a pair of processes only if both members of the pair have a shared mailbox.
+- A link may be associated with more than two processes.
+- Between each pair of communicating processes, a number of different links may exist, with each link corresponding to one mailbox.
+
+***Ex. Who gets the message?***
+
+```c
+P1 => send(A, message); // Send message to mailbox A
+P2 => recieve(A, message); // Recieve messages from mailbox A
+P3 => recieve(A, message); // Recieve messages from mailbox A
+```
+
+**The answer depends on which of the following methods we choose:**
+
+- Allow a link to be associated with two processes at most.
+- Allow at most one process at a time to execute a receive() operation.
+- Allow the system to select arbitrarily which process will receive the message (that is, either P2 or P3,but not both, will receive the message).The system may define an algorithm for selecting which process will receive the message (for example, *round robin*, where processes take turns receiving messages). The system may identify the receiver to the sender.
+
+**If the mailbox is owned by:**
+
+- **Operating system** - Must provide a mechanism to do the following
+  - Create a new mailbox.
+  - Send and Receive through the mailbox.
+  - Delete the mailbox.
+- **Process** - We distinguish between the owner (which can only receive messages through this mailbox) and the user (which can only send messages to the mailbox).
+
+#### Synchronization of Process Communication
+
+Communication takes place between two system calls:
+
+- Send()
+- Receive()
+
+**Blocking (synchronous) vs Non-blocking (Asynchronous)**
+
+- **Blocking**
+  - **Send** - The sending process is blocked until the message is received by the receiving process or by the mailbox.
+  - **Receive** - The receiver blocks until a message is available.
+- **Non-Blocking**
+  - **Send** - The sending process sends the message and resumes operation.
+  - **Receive** - The receiver retrieves either a valid message or a null.
+
+#### Buffering
+
+Whether communication is direct or indirect, messages exchanged by communicating processes reside in a temporary queue.
+
+**queues can be implemented in three ways:**
+
+- **Zero capacity** **(NON BUFFERING)** - The queue has a maximum length of zero; thus,the link cannot have any messages waiting in it. In this case, the sender must block until the recipient receives the message.
+- **Bounded capacity** **(BUFFERING)** - The queue has finite length n; thus, at most n messages can reside in it.
+- **Unbounded capacity** **(BUFFERING)** - The queue’s length is potentially infinite; thus, any number of messages can wait in it. The sender never blocks.
+
+### IPC (Inter-process Communication) with shared memory
+
+> **Shared Memory**
+>
+> A region of memory that is shared by cooperating processes is established. 
+
+- The operating system tries to prevent one process from accessing another process’s memory. Shared memory requires that two or more processes agree to <u>remove this restriction</u>.
+- The Process is also responsible for ensuring that they are not writing to the same location simultaneously.
+
+#### Producer - Consumer Problem 
+
+A <u>producer</u> process produces information that is consumed by a <u>consumer</u> process.
+
+The producer and consumer must be synchronized, so that the consumer does not try to consume an item that has not yet been produced.
+
+##### Bounded vs Unbounded Buffers
+
+- **Unbounded -** Places no practical limit on the size of the buffer.
+- **Bounded -** Assumes a fixed buffer size. 
+
+### Threads
+
+#### Overview
+
+> **Thread**
+>
+> A thread is a basic unit of CPU utilization and comprises of:
+>
+> - Thread ID
+> - Program Counter
+> - A register Set
+> - A stack data structure
+
+##### Motivation
+
+![image-20221022184149838](assets/image-20221022184149838.png)
+
+With threading a single application or program can:
+
+- Display images.
+- display text.
+- Retrieve data from the network.
+- And more.
+
+Like IPC threads help RPC servers handle concurrent connections.
+
+![image-20221022184424212](assets/image-20221022184424212.png)
+
+##### Benefits of threading
+
+- **Responsiveness** - keep program running even if blocked.
+- **Resource sharing** - threads share the memory and the resources of the process to which they belong by default.
+- **Economy** - because threads share the resources of the process to which they belong, it is more economical to create and context-switch threads.
+- **scalability** - threads may be running in parallel on different processing cores.
+
+#### Multicore Programming
+
+![image-20221022184810891](assets/image-20221022184810891.png)
+
+##### Challenges in multicore Programming
+
+five areas present challenges in programming for multicore
+systems:
+
+- **Identifying tasks -**  examining applications to find areas that can be divided into separate
+- **Balance -** ensure that the tasks perform equal work of equal value.
+- **Data Splitting -** data accessed and manipulated by the tasks must be divided to run on separate cores.
+- **Data dependency -** the data accessed by the tasks must be examined for dependencies between two or more tasks.
+- **Testing a debugging -** when a program is running in parallel on multiple cores, many different execution paths are possible.
+
+##### Types of Parallelism (Data vs Task)
+
+> **Data Parallelism**
+>
+> Focuses on distributing subsets of the same data across multiple computing cores and performing the same operation on each core.
+
+> **Task Parallelism**
+>
+> Involves distributing not data but tasks (threads) across
+> multiple computing cores. Each thread is performing a unique operation.
+
+### User thread vs. kernel thread
+
+> **User Threads**
+>
+> User threads are supported above the kernel and are managed without kernel support.
+
+> **Kernel Threads**
+>
+> kernel threads are supported and managed directly by the operating system.
+>
+> ***Note:*** Windows, Linux, Mac OS X,and Solaris - support kernel threads.
+
+### Thread model
+
+A relationship must exist between user threads and kernel threads. 3 common ways:
+
+- many-to-one model
+- one-to-one model
+- many-to-many model
+
+#### Many-to-One Model 
+
+![image-20221022190333089](assets/image-20221022190333089.png)
+
+> Maps many user-level threads to one kernel thread.
+
+| Advantages                                                   | Disadvantages                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Thread management is done by the thread library in user space, so it is efficient | The entire process will block if a thread makes a blocking system call. |
+|                                                              | because only one thread can access the kernel at a time,multiple threads are unable to run in parallel on multicore systems. |
+
+
+
+#### One-to-One Model
+
+![image-20221022190345411](assets/image-20221022190345411.png)
+
+>   Maps each user thread to a kernel thread.
+
+| Advantages                                                   | Disadvantages                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| It provides more concurrency than the many-to-one model by allowing another thread to run when a thread makes a blocking system call. | creating a user thread requires creating the corresponding kernel thread. (High overhead) |
+| Allows multiple threads to run in parallel on multiprocessors. |                                                              |
+
+
+
+#### Many-to-Many Model
+
+![image-20221022191444594](assets/image-20221022191444594.png)
+
+> multiplexes many user-level threads to a smaller or equal number of kernel threads.
+
+| Advantages                                                   | Disadvantages |
+| ------------------------------------------------------------ | ------------- |
+| Developers can create as many user threads as necessary.     | None          |
+| Corresponding kernel threads can run in parallel on a multiprocessor. | None          |
+| when a thread performs a blocking system call, the kernel can schedule another thread for execution. | None          |
+
+### The critical section problem and algorithms to solve the problem
+
+> **Critical Section Problem**
+>
+> used to design a protocol followed by a group of processes, so that when one process has entered its critical section, no other process is allowed to execute in its critical section.
+
+> **critical section**
+>
+> The segment of code where processes access shared resources, such as common variables and files, and perform write operations on them.
+
+```c
+While(True){
+    // Aquire lock
+    
+    // Critical section
+    
+    // Disable lock
+    
+    // Exit()
+}
+```
+
+
+
+#### Solutions to the critical section problem
+
+##### Methods
+
+- **Mutual Exclusion** - When one process is executing in its critical section, no other process is allowed to execute in its critical section.
+- **Progress** - When no process is executing in its critical section, and there exists a process that wishes to enter its critical section, it should not have to wait indefinitely to enter it.
+- **Bounded waiting** - There must be a <u>bound on the number of times a process is allowed to execute</u> in its critical section, after another process has requested to enter its critical section and before that request is accepted.
+
+##### Implementations (Locks)
+
+- **test_and_set** - Uses boolean True/False.
+- **Mutex Locks** - Software method that provides the `acquire()` and `release()` functions that execute atomically.
+- **Semaphores** - More sophisticated methods that utilize the `wait()` and `signal()` operations that execute atomically on Semaphore `S`, which is an integer variable.
+- **Conditional Variables** -  Utilizes a queue of processes that are waiting to enter the critical section.
+
+### Understand how to use mutex, semaphore, condition variable (IMPORTANT)
+
+#### Mutex
+
+> **Mutex (Mutual Exclusion)**
+>
+> to protect critical regions and thus prevent race conditions. Also called a spin lock.
+
+- A process that attempts to acquire an unavailable lock is blocked until the lock is released.
+
+```C
+//aquire a lock
+Aquire(){
+    while(!available){
+        //Wait
+        available = false;
+    }
+}
+
+// release a lock
+release(){
+    available = true;
+}
+```
+
+| Advantages                                                   | Disadvantages                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Easy to implement                                            | Requires busy waiting - other processes loop waiting for the mutex to unlock |
+| no context switch is required when a process must wait on a lock |                                                              |
+
+#### Semaphores
+
+> Semaphores
+>
+> is an integer variable that, apart from initialization, is accessed only through two standard atomic operations:
+>
+> - wait()
+> - Signal()
+
+```c
+//Definition of wait()
+wait(S){
+    while(S <= 0){
+        //busy wait
+        S--;
+    }
+}
+```
+
+```c
+//Definition of Signal()
+signal(S){
+    S++;
+}
+```
+
+- All modifications to the integer value of the semaphore in the wait() and signal() operations must be executed indivisibly. That is, when one process modifies the semaphore value, no other process can simultaneously modify that same semaphore value. 
+- Signal and wait must be executed without interruption.
+
+> **Counting semaphores**
+>
+> The value of a counting semaphore can range over an unrestricted domain.
+
+> **Binary semaphores**
+>
+> The value of a binary semaphore can range only between 0 and 1.
+
+#### Conditional variables
+
+##### Why conditional variables instead of mutex?
+
+When we need to conditionally check if some condition is met, we do not want to use spin look because it wastes CPU time. A condition variable is a way to achieve the same goal without continually polling.
+
+- Always use in conjunction to a mutex lock
+
+## // Programming Section
+
+### Processes
+
+#### fork()
+
+> **Description:**
+>
+> Fork system call is used for creating a new process, which is called ***child process\***, which runs concurrently with the process that makes the fork() call (parent process). After a new child process is created, both processes will execute the next instruction following the fork() system call. A child process uses the same pc(program counter), same CPU registers, same open files which use in the parent process.
+>
+> **Return Integer Values:**
+>
+> - **Negative** - creation of child process failed
+> - **Zero** - Created a child process successfully
+> - **Positive** - Returned to parent or caller, the positive  return number is the PID of the child process.
+>
+> **Note:** Will not run on a Windows environment.
+
+##### Fork the current program
+
+```c
+#include <stdio.h> 
+#include <sys/types.h> 
+#include <unistd.h> 
+#include <stdlib.h>
+int main() 
+{ 
+    fork(); 
+    fork(); 
+    fork(); 
+    printf("Hello world!\n");
+    return 0; 
+} 
+```
+
+Output:
+
+```bash
+Hello world!
+Hello world!
+Hello world!
+Hello world!
+Hello world!
+Hello world!
+Hello world!
+Hello world!
+```
+
+##### Fork with Child/Parent conditional
+
+```c
+#include <sys/types.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+int main(int argc, char *argv[])
+{
+   printf("I am: %d\n", (int) getpid());
+
+   pid_t pid = fork();
+   printf("fork returned: %d\n", (int) pid);
+
+   if (pid < 0) { /* error occurred */
+   	perror("Fork failed");
+   }
+   if (pid == 0) { /* child process */
+   	printf("I am the child with pid %d\n", (int) getpid());
+               printf("Child process is exiting\n");
+               exit(0);
+       }
+   /* parent process */
+   printf("I am the parent waiting for the child process to end\n");
+       wait(NULL);
+       printf("parent process is exiting\n");
+       return(0);
+}
+```
+
+Output:
+
+```bash
+I am: 2337
+fork returned: 2338
+I am the parent waiting for the child process to end
+fork returned: 0
+I am the child with pid 2338
+Child process is exiting
+parent process is exiting
+```
+
+#### wait()
+
+> **Description:**
+>
+> A call to wait() blocks the calling process until one of its child processes exits or a signal is received. After child process terminates, parent ***continues*** its execution after wait system call instruction. Child process may terminate due to any of these:
+>
+> - It calls exit();
+> - It returns (an int) from main
+> - It receives a signal (from the OS or another process) whose default action is to terminate.
+>
+> **Parameters:**
+>
+> - NULL -  indicates that we will not know about the state of the child’s process’s transition.
+>
+> **Return Values:**
+>
+> - No return values
+>
+> **Note:** This call placed into the parent section of code makes the child go/run first.
+
+```c
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <sys/wait.h>
+int main(){
+    pid_t p;
+    printf("Before fork\n");
+    p=fork();
+    //Child
+    if(p==0){
+        printf("I am a child");
+        printf("my parent is waiting");
+    }
+    //Parent
+    else{
+        wait(NULL);
+        printf("My child ID is..");
+    }
+    printf("common");
+}
+```
+
+Output:
+
+```bash
+Befrore fork
+I am a child
+my parent is waiting
+common
+my child ID is...
+common
+```
+
+
+
+#### waitpid()
+
+> **Description:**
+>
+> system call suspends execution of the current process until a child specified by *pid* argument has changed state. By default, **waitpid**() waits only for terminated children
+>
+> **Parameters:**
+>
+> - **Less than -1** - meaning wait for any child process whose process group ID is equal to the absolute value of *pid*
+> - **-1** - wait for any child processes
+> - **0** - wait for any child process whose process group ID is equal to that of the calling process.
+> - **Greater than 0** - wait for the child whose process ID is equal to the value of pid.
+>
+> **Return Values:**
+>
+> - on success, returns the process ID of the child whose state has changed 
+>
+> - **-1** - On error
+>
+> **Note:** Each of these calls sets *errno* to an appropriate value in the case of an error.
+
+Usage same as `wait()` so no example.
+
+#### kill()
+
+> **Description:**
+>
+> A command for you to kill a running process using a process ID.
+>
+> **Parameters:**
+>
+> - PID - PID you wnt to kill
+> - Sig - signal you want to send
+>
+> **Return Values:**
+>
+> - **-1** - on error
+> - **0** - on success
+>
+> **Optional sig kill options:**
+>
+> - SIGNULL - 0 - Check access to pid
+> - SIGHUP - 1 - Terminate; can be trapped
+> - SIGINT - 2 -  Terminate; can be trapped
+> - SIGQUIT - 3 - Terminate with core dump; can be trapped
+> - SIGKILL - 9 - Forced termination; cannot be trapped
+> - SIGTERM - 15 - Terminate; can be trapped
+> - SIGSTOP - 24 - Pause the process; cannot be trapped. (This is default if signal not provided)
+> - SIGTSTP - 25 - Stop/pause the process; can be trapped
+> - SIGCONT - 26 - Run a stopped process
+>
+> ***Note:***  the specific mapping between numbers and signals can vary between Unix implementations.
+
+#### exec*() family
+
+> **Description:**
+>
+> The exec family of functions replaces the current running process with a new process. It can be used to run a C program by using another C program. It comes under the header file **unistd.h.**
+>
+> - execl() 
+> - execlp()
+> - execle()
+> - execv()
+> - execvp()
+> - execve()
+
+##### execl() 
+
+> e*xecl()* receives the location of the executable file as its first argument. The next arguments will be available to the file when it’s executed. The last argument has to be *NULL*:
+
+Function Header:
+
+```c
+int execl(const char *pathname, const char *arg, ..., NULL)
+```
+
+Example Usage:
+
+```c
+#include <unistd.h>
+
+int main(void) {
+    char *file = "/usr/bin/echo";
+    char *arg1 = "Hello world!";
+	
+    execl(file, file, arg1, NULL);
+
+    return 0;
+}
+```
+
+Output:
+
+```bash
+$ gcc execl.c -o execl
+$ ./execl
+Hello world!
+```
+
+##### execlp()
+
+> *execlp()* is very similar to *execl()*. However, *execlp()* uses the PATH environment variable to look for the file. Therefore, the path to the executable file is not needed.
+
+Function Header:
+
+```c
+int execlp(const char *file, const char *arg, ..., NULL)
+```
+
+Example Usage:
+
+```c
+#include <unistd.h>
+
+int main(void) {
+    char *file = "echo";
+    char *arg1 = "Hello world!";
+
+    execlp(file, file, arg1, NULL);
+    return 0;
+}
+```
+
+Output:
+
+```bash
+$ gcc execlp.c -o execlp
+$ ./execlp
+Hello world!
+```
+
+##### execle()
+
+> If we use *execle(),* we can pass environment variables to the function, and it’ll use them:
+
+Function Header:
+
+```c
+int execle(const char *pathname, const char *arg, ..., NULL, char *const envp[])
+```
+
+Example Usage:
+
+```c
+#include <unistd.h>
+
+int main(void) {
+    char *file = "/usr/bin/bash";
+    char *arg1 = "-c";
+    char *arg2 = "echo $ENV1 $ENV2!";
+    char *const env[] = {"ENV1=Hello", "ENV2=World", NULL};
+	
+    execle(file, file, arg1, arg2, NULL, env);
+
+    return 0;
+}
+```
+
+Output:
+
+```bash
+$ gcc execle.c -o execle
+$ ./execle
+Hello World!
+```
+
+##### execv()
+
+> *execv()*, unlike *execl()*, receives a vector of arguments that will be available to the executable file. In addition, the last element of the vector has to be NULL:
+
+Function Header:
+
+```c
+int execv(const char *pathname, char *const argv[])
+```
+
+Example Usage:
+
+```c
+#include <unistd.h>
+
+int main(void) {
+    char *file = "/usr/bin/echo";
+    char *const args[] = {"/usr/bin/echo", "Hello world!", NULL};
+	
+    execv(file, args);
+
+    return 0;
+}
+```
+
+Output:
+
+```bash
+$ gcc execv.c -o execv
+$ ./execv
+Hello world!
+```
+
+##### execvp()
+
+> Just like *execlp()*, *execvp()* looks for the program in the PATH environment variable:
+
+Function Header:
+
+```c
+int execvp(const char *file, char *const argv[])
+```
+
+Example Usage:
+
+```c
+#include <unistd.h>
+
+int main(void) {
+    char *file = "echo";
+    char *const args[] = {"/usr/bin/echo", "Hello world!", NULL};
+	
+    execvp(file, args);
+
+    return 0;
+}
+```
+
+Output:
+
+```bash
+$ gcc execvp.c -o execvp
+$ ./execvp
+Hello world!
+```
+
+##### execve()
+
+> We can pass environment variables to *execve()*. In addition, the arguments need to be inside a NULL-terminated vector:
+
+Function Header:
+
+```c
+int execve(const char *pathname, char *const argv[], char *const envp[])
+```
+
+Example Usage:
+
+```c
+#include <unistd.h>
+
+int main(void) {
+    char *file = "/usr/bin/bash";
+    char *const args[] = {"/usr/bin/bash", "-c", "echo Hello $ENV!", NULL};
+    char *const env[] = {"ENV=World", NULL};
+	
+    execve(file, args, env);
+
+    return 0;
+}
+```
+
+Output:
+
+```bash
+$ gcc execve.c -o execve
+$ ./execve
+Hello World!
+```
+
+
+
+### Shared memory (IPC system calls)
+
+> **Description:**
+>
+> through shared memory is a concept where two or more process can access the common memory. And communication is done via this shared memory where changes made by one process can be viewed by another process.
+>
+> The problem with pipes, fifo and message queue – is that for two process to exchange information. The information has to go through the kernel.
+>
+> - Server reads from the input file.
+> - The server writes this data in a message using either a pipe, fifo or message queue.
+> - The client reads the data from the IPC channel,again requiring the data to be copied from kernel’s IPC buffer to the client’s buffer.
+> - Finally the data is copied from the client’s buffer.
+>
+> A total of four copies of data are required (2 read and 2 write). So, shared memory provides a way by letting two or more processes share a memory segment. With Shared Memory the data is only copied twice – from input file into shared memory and from shared memory to the output file.
+
+#### shmget()
+
+> **Description:**
+>
+> upon successful completion, shmget() returns an identifier for the shared memory segment.
+
+#### shmat()
+
+> **Description:**
+>
+> Before you can use a shared memory segment, you have to attach yourself to it using shmat().
+
+#### shmdt()
+
+> **Description:** 
+>
+> When you’re done with the shared memory segment, your program should detach itself from it using shmdt().
+
+#### Example Using shmget(), shmat() and shmdt()
+
+```C
+//SHARED MEMORY FOR WRITER PROCESS
+#include <iostream>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+using namespace std;
+
+int main()
+{
+	// ftok to generate unique key
+	key_t key = ftok("shmfile",65);
+
+	// shmget returns an identifier in shmid
+	int shmid = shmget(key,1024,0666|IPC_CREAT);
+
+	// shmat to attach to shared memory
+	char *str = (char*) shmat(shmid,(void*)0,0);
+
+	cout<<"Write Data : ";
+	gets(str);
+
+	printf("Data written in memory: %s\n",str);
+	
+	//detach from shared memory
+	shmdt(str);
+
+	return 0;
+}
+
+```
+
+```c
+// SHARED MEMORY FOR READER PROCESS
+#include <iostream>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+using namespace std;
+
+int main()
+{
+	// ftok to generate unique key
+	key_t key = ftok("shmfile",65);
+
+	// shmget returns an identifier in shmid
+	int shmid = shmget(key,1024,0666|IPC_CREAT);
+
+	// shmat to attach to shared memory
+	char *str = (char*) shmat(shmid,(void*)0,0);
+
+	printf("Data read from memory: %s\n",str);
+	
+	//detach from shared memory
+	shmdt(str);
+	
+	// destroy the shared memory
+	shmctl(shmid,IPC_RMID,NULL);
+	
+	return 0;
+}
+
+```
+
+Output Writer:
+
+```bash
+./writer
+Write Data : Geeks for Geeks
+Data written in memory: Geeks for Geeks
+```
+
+Output Reader:
+
+```bash
+./reader
+Data read from memory: Geeks for Geeks
+```
+
+
+
+### Threads (IMPORTANT)
+
+> **Description:**
+>
+> It allows us to create multiple threads for concurrent process flow. It is most effective on multiprocessor or multi-core systems where threads can be implemented on a kernel-level for achieving the speed of execution. Gains can also be found in uni-processor systems by exploiting the latency in IO or other system functions that may halt a process.
+
+#### pthread_attr_init()
+
+> function initializes the thread attributes object pointed to by attr with default attribute values.
+
+Function Header:
+
+```C
+int pthread_attr_init(pthread_attr_t *attr);
+```
+
+
+
+#### pthread_create()
+
+> **Description:**
+>
+> used to create a new thread.
+>
+> **Parameters:**
+>
+> - **thread:** pointer to an unsigned integer value that returns the thread id of the thread created.
+> - **attr:** pointer to a structure that is used to define thread attributes like detached state, scheduling policy, stack address, etc. Set to NULL for default thread attributes.
+> - **start_routine:** pointer to a subroutine that is executed by the thread. The return type and parameter type of the subroutine must be of type void *. The function has a single attribute but if multiple values need to be passed to the function, a struct must be used.
+> - **arg:** pointer to void that contains the arguments to the function defined in the earlier argument.
+
+Function Header:
+
+```c
+int pthread_create(pthread_t * thread, const pthread_attr_t * attr, void * (*start_routine)(void *), void *arg);
+```
+
+#### pthread_join ()
+
+> **Description:**
+>
+> used to wait for the termination of a thread.
+>
+> **Parameters:**
+>
+> - **th:** thread id of the thread for which the current thread waits.
+> - **thread_return:** pointer to the location where the exit status of the thread mentioned in th is stored.
+
+Function Header:
+
+```c
+int pthread_join(pthread_t th, void **thread_return);
+```
+
+#### Example Using pthread_join() and pthread_create()
+
+```c
+// C program to show thread functions
+
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+void* func(void* arg)
+{
+	// detach the current thread
+	// from the calling thread
+	pthread_detach(pthread_self());
+
+	printf("Inside the thread\n");
+
+	// exit the current thread
+	pthread_exit(NULL);
+}
+
+void fun()
+{
+	pthread_t ptid;
+
+	// Creating a new thread
+	pthread_create(&ptid, NULL, &func, NULL);
+	printf("This line may be printed"
+		" before thread terminates\n");
+
+	// The following line terminates
+	// the thread manually
+	// pthread_cancel(ptid);
+
+	// Compare the two threads created
+	if(pthread_equal(ptid, pthread_self())
+		printf("Threads are equal\n");
+	else
+		printf("Threads are not equal\n");
+
+	// Waiting for the created thread to terminate
+	pthread_join(ptid, NULL);
+
+	printf("This line will be printed"
+		" after thread ends\n");
+
+	pthread_exit(NULL);
+}
+
+// Driver code
+int main()
+{
+	fun();
+	return 0;
+}
+
+```
+
+Output:
+
+```bash
+This line may be printed before thread terminates
+Threads are not equal
+Inside the thread
+This line will be printed after thread ends
+```
+
+### Semaphores, Conditional variables, mutex, monitors and Proc. sync. (IMPORTANT)
+
+#### sem_init()
+
+#### sem_wait()
+
+#### sem_post()
+
+#### pthread_mutex_lock()
+
+#### pthread_mutex_unlock()
+
+#### pthread_cond_wait()
+
+#### pthread_cond_signal()
+
