@@ -66,7 +66,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 # Lecture 1 (11-01-2023)
 
-#### Some aspects of OS operation
+## Some aspects of OS operation
 
 - Given that a top-down definition is out of reach....
 - **...We will instead approach our study of operating systems by looking at the from the top down perspectives.**
@@ -77,7 +77,7 @@ To understand how a set of computing resources can be shared safely, efficiently
   - What are some typical OS structures?
   - what are foundational OS abstractions?
 
-#### What happens at startup?
+## What happens at startup?
 
 - Bootstrap program 
   - minimal progra mloaded into computer at power-up boot or reboot
@@ -87,7 +87,7 @@ To understand how a set of computing resources can be shared safely, efficiently
   - Final step is to load OS kernel and begin its execution (i.e., in Unix, start process 0, which forks itself to create in process 1, such that this latter process is the ancestor of all other processes).
   - Note: We will go into gruesome detail this semester on the concept of a process.
 
-#### What happens at startup? (In order)
+## What happens at startup? (In order)
 
 - BIOS - The computer is turned on, and the BIOS initializes the hardware
 - MBR - The BIOS calls code stored in the MBR at the start of disk 0
@@ -96,13 +96,13 @@ To understand how a set of computing resources can be shared safely, efficiently
 - MAIN MEMEORY - init executes  runlevel1  program
 - RUNLEVEL - run level programs are executed from /etc/rc.d/rc.*.d/
 
-#### Computer System Organization
+## Computer System Organization
 
 - One or more CPUs, device controllers connect through a common bus
 - Access a shared memory
 - Physically concurrent CPUs and devices compete for memory cycles![image-20230111145342623](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145342623.png)
 
-#### Computer-System Operation
+## Computer-System Operation
 
 - I/O devices and the CPU can execute concurrently 
 - Each device controller is in charge of a particular device type 
@@ -111,7 +111,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 - I/O is from the device to local buffer of controller 
 - Device controller informs CPU that it has finished its operation by causing an **<u>interrupt</u>**
 
-#### Common functions of interrupts
+## Common functions of interrupts
 
 - An interrupt event causes control to be transferred to the **interrupt service routine** (aka **interrupt handler**)
   - This is normally found through the i**nterrupt vector** 
@@ -122,13 +122,13 @@ To understand how a set of computing resources can be shared safely, efficiently
   - Caused by an error or a user request
 - **Bottom line: At its core, an operating system is interrupt driven**
 
-#### Interrupt Timeline
+## Interrupt Timeline
 
 ![image-20230111145741515](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145741515.png)
 
 ![image-20230111145806158](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145806158.png)
 
-#### Interrupt Handling 
+## Interrupt Handling 
 
 - The operating system preserves the state of the CPU by storing registers and the program counter.
 - Determines which type of interrupt has occurred:
@@ -155,25 +155,25 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 #### Storage Structure
 
-#### Storage Hierarchy
+## Storage Hierarchy
 
-#### Storage-Device Hierarchy
+## Storage-Device Hierarchy
 
-#### Caching
+## Caching
 
-#### Direct Memory Access Structure
+## Direct Memory Access Structure
 
-#### How a Modern Computer Works
+## How a Modern Computer Works
 
-#### Computer-System Architecture
+## Computer-System Architecture
 
-#### Symmetric Multiprocessing Architecture
+## Symmetric Multiprocessing Architecture
 
-#### A Dual-Core Design
+## A Dual-Core Design
 
-#### Operating System Structure
+## Operating System Structure
 
-#### Memory Layout for Multi-programmed System
+## Memory Layout for Multi-programmed System
 
 
 
