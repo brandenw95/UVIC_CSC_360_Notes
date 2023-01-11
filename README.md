@@ -64,7 +64,92 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 
 
+# Lecture 1 (01-11-2023)
 
+#### Some aspects of OS operation
+
+- Given that a top-down definition is out of reach....
+- **...We will instead approach our study of operating systems by looking at the from the top down perspectives.**
+- Some initial perspectives (ie. not and exhaustive list)
+  - What happens at startup
+  - what are the consequences of physical concurrency?
+  - What are the consequences of different data storage devices (speeds, capacities)?
+  - What are some typical OS structures?
+  - what are foundational OS abstractions?
+
+#### What happens at startup?
+
+- Bootstrap program 
+  - minimal progra mloaded into computer at power-up boot or reboot
+  - Normally stored in ROM or EPROM (aka firmware)
+- These programs load in progressively more powerful programs
+  - Initializes all aspects of the computer system 
+  - Final step is to load OS kernel and begin its execution (i.e., in Unix, start process 0, which forks itself to create in process 1, such that this latter process is the ancestor of all other processes).
+  - Note: We will go into gruesome detail this semester on the concept of a process.
+
+#### What happens at startup? (In order)
+
+- BIOS - The computer is turned on, and the BIOS initializes the hardware
+- MBR - The BIOS calls code stored in the MBR at the start of disk 0
+- GRUB - Grand Unified Bootloader executes the hardcoded Kernel
+- KERNAL - Kernel executes /bin/init (i.e. process 1)
+- MAIN MEMEORY - init executes  runlevel1  program
+- RUNLEVEL - run level programs are executed from /etc/rc.d/rc.*.d/
+
+#### Computer System Organization
+
+- One or more CPUs, device controllers connect through a common bus
+- Access a shared memory
+- Physically concurrent CPUs and devices compete for memory cycles![image-20230111145342623](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145342623.png)
+
+#### Computer-System Operation
+
+- I/O devices and the CPU can execute concurrently 
+- Each device controller is in charge of a particular device type 
+- Each device controller has a local buffer 
+- CPU moves data from/to main memory to/from local buffers 
+- I/O is from the device to local buffer of controller 
+- Device controller informs CPU that it has finished its operation by causing an **<u>interrupt</u>**
+
+#### Common functions of interrupts
+
+- An interrupt event causes control to be transferred to the **interrupt service routine** (aka **interrupt handler**)
+  - This is normally found through the i**nterrupt vector** 
+  - The vector contains the mapping / addresses of all hardware interrupt code in the OS
+- Interrupt hardware must also cause **address of interrupted instruction** to be saved
+  - If interrupt priorities are possible, then interrupted instruction might be within a handler!
+- A **trap** or **exception** is a software-generated interrupt
+  - Caused by an error or a user request
+- **Bottom line: At its core, an operating system is interrupt driven**
+
+#### Interrupt Timeline
+
+![image-20230111145741515](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145741515.png)
+
+![image-20230111145806158](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145806158.png)
+
+#### Interrupt Handling 
+
+- The operating system preserves the state of the CPU by storing registers and the program counter.
+- Determines which type of interrupt has occurred:
+  - Polling
+  - <u>Vectored interrupt system</u> 
+- Separate segments of code determine what action should be taken for each type of interrupt.
+
+> **Vectored Interrupts**
+>
+> The purpose of a vectored interrupt mechanism is to reduce the
+> need for a single interrupt handler to search all possible sources of interrupts to determine which one needs service.
+
+- Before handling an interrupt, operating system **preserves the state of the CPU.**
+  - Values in CPU registers (general purpose, status, etc.)
+  - Value of program counter
+- The OS must determine precisely what interrupt has occurred:
+  - Approach 1: **poll** / ask the interrupt controller for device information
+  - Approach 2: device is associated with a particular spot in the **interrupt vector**, therefore the fact of the interrupt directly indicates starting address of handler’s code.
+  - The approach used depends upon OS, hardware architecture, device type.
+- Code in the handler for the interrupt determine actions to take.
+- After handler’s work is completed, **CPU state is restored.**
 
 
 
