@@ -223,7 +223,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
   - Two types:
 
-    - **Asymmetric Multiprocessing** – each processor is assigned a spec
+    - **Asymmetric Multiprocessing** – each processor is assigned a specific task
     - **Symmetric Multiprocessing** – each processor performs all tasks
 
 ## Symmetric Multiprocessing Architecture
