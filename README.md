@@ -148,32 +148,116 @@ To understand how a set of computing resources can be shared safely, efficiently
   - Approach 1: **poll** / ask the interrupt controller for device information
   - Approach 2: device is associated with a particular spot in the **interrupt vector**, therefore the fact of the interrupt directly indicates starting address of handler’s code.
   - The approach used depends upon OS, hardware architecture, device type.
+
+![image-20230112143554678](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112143554678.png)
+
 - Code in the handler for the interrupt determine actions to take.
 - After handler’s work is completed, **CPU state is restored.**
 
-# Lecture 2 (13-01-2023)
+# Lecture 2 (12-01-2023)
 
-#### Storage Structure
+## Storage Structure
+
+- Main memory – only large storage media that the CPU can access directly
+  - **Random access**
+  - Typically **volatile**
+- Secondary storage – extension of main memory that provides large **nonvolatile** storage capacity
+- Hard disks – rigid metal or glass platters covered with magnetic recording material
+  - Disk surface is logically divided into **tracks**, which are subdivided into sectors 
+  - The **disk controller** determines the logical interaction between the device and the computer
+- **Solid-state disks** – faster than hard disks, nonvolatile
+  - Various technologies 
+  - Becoming more popular
 
 ## Storage Hierarchy
 
+- Storage systems organized in hierarchy
+  - Speed 
+  - cost 
+  - Volatility
+- **Caching** – copying information into faster storage system; main memory can be viewed as a cache for secondary storage
+- **Device Driver** for each device controller to manage I/O
+  - Provides uniform interface between controller and kernel
+
 ## Storage-Device Hierarchy
+
+![image-20230112143703796](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112143703796.png)
 
 ## Caching
 
+- Important principle, performed at many levels in a computer (in hardware, operating system, software)
+- Information in use copied from slower to faster storage temporarily
+- Faster storage (cache) checked first to determine if information is there
+  - If it is, information used directly from the cache (fast) 
+  - If not, data copied to cache and used there
+- Cache smaller than storage being cached
+  - Cache management important design problem
+  - Cache size and replacement policy
+
 ## Direct Memory Access Structure
+
+- Used for high-speed I/O devices able to transmit information at close to memory speeds
+- Device controller transfers blocks of data from buffer storage directly to main memory without CPU intervention
+- Only one interrupt is generated per block, rather than the one interrupt per byte
 
 ## How a Modern Computer Works
 
+![image-20230112144326709](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112144326709.png)
+
 ## Computer-System Architecture
+
+- Most systems use a single general-purpose processor
+
+  - Most systems have special-purpose processors as well
+
+- Multiprocessors systems growing in use and importance
+
+  - Also known as parallel systems, tightly-coupled systems
+
+  - Advantages include:
+
+    - **Increased throughput** 
+
+    - **Economy of scale** 
+    - **Increased reliability** – graceful degradation or fault tolerance
+
+  - Two types:
+
+    - **Asymmetric Multiprocessing** – each processor is assigned a spec
+    - **Symmetric Multiprocessing** – each processor performs all tasks
 
 ## Symmetric Multiprocessing Architecture
 
+![image-20230112144636612](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112144636612.png)
+
 ## A Dual-Core Design
+
+- Multi-chip and multicore
+- Systems containing all chips
+  - Chassis containing multiple separate systems
+
+![image-20230112144734940](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112144734940.png)
 
 ## Operating System Structure
 
+- **Multiprogramming** **(Batch system)** needed for efficiency
+  - Single user cannot keep CPU and I/O devices busy at all times 
+  - Multiprogramming organizes jobs (code and data) so CPU always has one to execute
+  - A subset of total jobs in system is kept in memory
+  - One job selected and run via **job scheduling** 
+  - When it has to wait (for I/O for example), OS switches to another job
+- **Timesharing (multitasking)** is logical extension in which CPU switches jobs so frequently that users can interact with each job while it is running, creating **interactive** computing
+  - **Response time** should be < 1 second 
+  - Each user has at least one program executing in memory -> **process** 
+  - If several jobs ready to run at the same time -> **CPU scheduling** 
+  - If processes don’t fit in memory, **swapping** moves them in and out to run 
+  - **Virtual memory** allows execution of processes not completely in memory
+
 ## Memory Layout for Multi-programmed System
+
+![image-20230112145107228](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112145107228.png)
+
+# Lecture 3 (16-01-2013)
 
 
 
