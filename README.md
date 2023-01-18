@@ -60,9 +60,9 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## lecture Slides
 
-[Lecture 0 - Introduction to Operating Systems](assets/L0.pdf) 
+[Slide 0 - Introduction to operating systems](assets/L0.pdf) 
 
-
+[Slide 1 - Operating System Structures](assets/L1.pdf) 
 
 # Lecture 1 (11-01-2023)
 
