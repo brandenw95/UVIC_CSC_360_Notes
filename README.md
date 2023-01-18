@@ -445,6 +445,8 @@ To understand how a set of computing resources can be shared safely, efficiently
 	- Examples include GNU/Linux and BSD UNIX (including core of Mac OS X), and many more
 	- Can use VMM like VMware Player (Free on Windows), VirtualBox (open source and free on many platforms - http://www.virtualbox.com)
 
+# Lecture 4
+
 
 
 # Chapter 1 (Introduction)
