@@ -259,6 +259,192 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 # Lecture 3 (16-01-2013)
 
+## Operating-System Operations
+
+- **Interrupt driven (hardware and software)**
+  - Hardware interrupt by one of the devices
+  - Software interrupt (<u>exception</u> or <u>trap</u>):
+    - Software error (e.g., division by zero)
+    - Request for operating system service
+    - Other process problems include infinite loop, processes modifying each other or the operating system
+- **Dual-mode** operation allows OS to protect itself and other system components
+  - <u>User mode</u> and <u>kernel mode</u>
+  - <u>Mode bit</u> provided by hardware
+    - Provides ability to distinguish when system is running user code or kernel code
+    - Some instructions designated as privileged, only executable in kernel mode
+    - System call changes mode to kernel, return from call resets it to user
+- Increasingly CPUs support multi-mode operations
+  - i.e. **virtual machine manager (VMM)** mode for guest **VMs**
+
+## Transition from User to Kernel Mode
+
+- Timer to prevent infinite loop / process hogging resources
+  - Timer is set to interrupt the computer after some time period
+  - Keep a counter that is decremented by the physical clock.
+  - Operating system set the counter (privileged instruction) 
+  - When counter zero generate an interrupt
+  - Set up before scheduling process to regain control or terminate program that exceeds allotted time
+
+![image-20230117191901751](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117191901751.png)
+
+## Process Management
+
+- A process is a program in execution. It is a unit of work within the system. Program is a **passive entity**, process is an **active entity**.
+- Process needs resources to accomplish its task
+  - CPU, memory, I/O, files
+  - Initialization data
+- Process termination requires reclaim of any reusable resources
+- Single-threaded process has one **program counter** specifying location of next instruction to execute
+- Process executes instructions sequentially, one at a time, until completion
+- Multi-threaded process has one program counter per thread
+- Typically system has many processes, some user, some operating system running concurrently on one or more CPUs
+  - Concurrency by multiplexing the CPUs among the processes / threads
+
+## Process Management Activities
+
+- The operating system is responsible for the following activities in connection with process management:
+  - Creating and deleting both user and system processes
+  - Suspending and resuming processes
+  - Providing mechanisms for process synchronization
+  - Providing mechanisms for process communication
+  - Providing mechanisms for deadlock handling
+
+## Memory Management
+
+- To execute a program all (or part) of the instructions must be in memory
+- All (or part) of the data that is needed by the program must be in memory.
+- Memory management determines what is in memory and when
+  - Optimizing CPU utilization and computer response to users
+- Memory management activities
+  - Keeping track of which parts of memory are currently being used and by whom
+  - Deciding which processes (or parts thereof) and data to move into and out of memory
+  - Allocating and deallocating memory space as need
+
+## Storage Management
+
+- OS provides uniform, logical view of information storage
+  - Abstracts physical properties to logical storage unit - **file**
+  - Each medium is controlled by device (i.e., disk drive, tape drive)
+    - Varying properties include access speed, capacity, data-transfer rate, access method (sequential or random)
+- File-System management
+  - Files usually organized into directories
+  - Access control on most systems to determine who can access what
+  - OS activities include
+    - Creating and deleting files and directories
+    - Primitives to manipulate files and directories
+    - Mapping files onto secondary storage
+    - Backup files onto stable (non-volatile) storage media
+
+## Mass-Storage Management
+
+- Usually, disks are used to store data that does not fit in main memory or data that must be kept for a “long” period of time
+- Proper management is of central importance
+- Entire speed of computer operation hinges on disk subsystem and its algorithms
+- OS activities
+  - Free-space management
+  - Storage allocation
+  - Disk scheduling
+- Some storage need not be fast
+- Tertiary storage includes optical storage, magnetic tape
+- Still must be managed – by OS or applications
+- Varies between WORM (write-once, read-many-times) and RW (read-write)
+
+## Performance of Various Levels of Storage
+
+![image-20230117193006301](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117193006301.png)
+
+## Migration of data “A” from Disk to Register
+
+- Multitasking environments must be careful to use most recent value, no matter where it is stored in the storage hierarchy
+
+  ![image-20230117193031063](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117193031063.png)
+
+- Multiprocessor environment must provide cache coherency in hardware such that all CPUs have the most recent value in their cache
+
+- Distributed environment situation even more complex
+
+  - Several copies of a datum can exist (i.e., on physically different computers)
+  - Later in the course we may have an opportunity to look at strategies for dealing with this.
+
+## I/O Subsystem
+
+- One purpose of OS is to hide peculiarities of hardware devices from the user
+- I/O subsystem responsible for
+- Memory management of I/O including buffering (storing data temporarily while it is being transferred), caching (storing parts of data in faster storage for performance), spooling (the overlapping of output of one job with input of other jobs)
+  - General device-driver interface
+  - Drivers for specific hardware devices
+
+## Protection and Security
+
+- **Protection** – any mechanism for controlling access of processes or users to resources defined by the OS
+- **Security** – defense of the system against internal and external attacks
+  - Huge range, including denial-of-service, worms, viruses, identity theft, theft of service
+- Systems generally first distinguish among users, to determine who can do what
+  - User identities (**user IDs**, security IDs) include name and associated number, one per user
+  - User ID then associated with all files, processes of that user to determine access control
+  - Group identifier **(group ID**) allows set of users to be defined and controls managed, then also associated with each process, file
+  - **Privilege escalation** allows user to change to effective ID with more rights
+
+## Virtual memory
+
+- Multiprogramming intuition:
+  - if a task is in memory, then the CPU can be switch to work on the task
+- Problem:
+  - What if there is not enough memory available to hold a task?
+- Chosen solution:
+  - **Logical view** of memory does not need to correspond to **physical view** of memory
+  - That is, **only those parts of a task that are needed in physical memory need be resident.**
+  - This is known as **virtual memory.**
+
+![image-20230117200222273](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117200222273.png)
+
+## Virtualization
+
+- Allows operating systems to run applications within other OSes
+  - Vast and growing industry
+- **Emulation** used when source CPU type different from target type (i.e. PowerPC to Intel x86)
+  - Generally slowest method
+  - When computer language not compiled to native code – **Interpretation**
+- **Virtualization** – OS natively compiled for CPU, running **guest** OSes also natively compiled
+  - Consider VMware running Windows 10 guests, each running applications, all on native Windows 10 host OS
+  - VMM (virtual machine Manager) provides virtualization services
+- Use cases involve laptops and desktops running multiple OSes for exploration or compatibility
+  - Apple laptop running Mac OS X host, Windows as a guest
+  - Developing apps for multiple OSes without having multiple systems
+  - QA testing applications without having multiple systems
+  - Executing and managing compute environments within data centers
+- **VMM** can run natively, in which case they are also the **host**
+  - There is no general purpose host then (VMware ESX and Citrix XenServer)
+
+![image-20230117200432347](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117200432347.png)
+
+## Cloud Computing
+
+- Cloud computing environments composed of traditional OSes, plus VMMs, plus cloud management tools
+  - Internet connectivity requires security like firewalls
+  - Load balancers spread traffic across multiple applications
+
+![image-20230117200624147](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117200624147.png)
+
+## Real-Time Embedded Systems
+
+- Real-time embedded systems most prevalent form of computers
+  - Vary considerable, special purpose, limited purpose OS, real-time OS
+  - Use expanding
+- Many other special computing environments as well
+  - Some have OSes, some perform tasks without an OS
+- Real-time OS has well-defined fixed time constraints
+  - Processing must be done within constraint
+  - Correct operation only if constraints met
+
+## Open-Source Operating Systems
+
+	- Operating systems made available in source-code format rather than just binary closed-source
+	- Counter to the copy protection and Digital Rights Management (DRM) movement
+	- Started by Free Software Foundation (FSF), which has “copyleft” GNU Public License (GPL)
+	- Examples include GNU/Linux and BSD UNIX (including core of Mac OS X), and many more
+	- Can use VMM like VMware Player (Free on Windows), VirtualBox (open source and free on many platforms - http://www.virtualbox.com)
+
 
 
 # Chapter 1 (Introduction)
