@@ -385,6 +385,8 @@ To understand how a set of computing resources can be shared safely, efficiently
   - Group identifier **(group ID**) allows set of users to be defined and controls managed, then also associated with each process, file
   - **Privilege escalation** allows user to change to effective ID with more rights
 
+# Lecture 4 (18-01-2013)
+
 ## Virtual memory
 
 - Multiprogramming intuition:
@@ -445,7 +447,105 @@ To understand how a set of computing resources can be shared safely, efficiently
 	- Examples include GNU/Linux and BSD UNIX (including core of Mac OS X), and many more
 	- Can use VMM like VMware Player (Free on Windows), VirtualBox (open source and free on many platforms - http://www.virtualbox.com)
 
-# Lecture 4
+## Outline - Operating System structures
+
+- Operating System Structures: **The System Interface**
+  - Operating **System Services**
+  - Briefly: OS interface presented to user
+  - **System Calls**
+  - **Types** of System Calls
+  - **System Programs**
+
+## OS System Services
+
+#### Overview
+
+- Operating systems are designed:
+  - to provide an environment for execution ... 
+  - ... of **programs** and **services** ....
+  - ... to **programs** and **users.**
+- Set of OS services provides functions that are directly **helpful to the user**
+  - User interface
+  - Program execution
+  - I/O operations
+  - File-system manipulation
+  - Communications
+  - Error detection
+
+#### User Interface
+
+- Almost all operating systems have a user interface (UI)
+- Varies between command-line (CLI) and graphics user interface (GUI)
+- Also: **batch system** interface
+- Note: interfaces for phones and tablets now even go beyond touchscreens (e.g., Apple’s Siri for voice commands)
+
+#### Program execution
+
+- Locating code for a program within attached storage
+- Loading this program into main memory
+- Running that program...
+- ... were execution terminates either normally or abnormally (i.e., indicating an error)
+
+#### Communication
+
+- Processes (i.e. running programs) may exchange information / data 
+- These exchanges can occur completely within the same computer
+-  However, they can also occur between running programs on different computers
+- Communication mechanism may one using **shared memory** or through **message passing** (i.e., packets moved by the OS).
+
+#### Error detection
+
+- OS is always be monitoring for possible errors
+- These may occur in the **CPU**, in the **memory hardware**, in **I/O devices**, or in the **user program** itself
+- For each error, OS should **take appropriate steps to respond** in such a way that computer behaves **consistently and correctly**
+-  OS can provide **debugging facilities** which can greatly enhance both the user’s and the programmer’s ability to use the OS efficiently.
+
+![image-20230118144850758](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118144850758.png)
+
+![image-20230118144910597](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118144910597.png)
+
+## System Calls
+
+- Recall the notion of an **API**
+  - Application Programming Interface
+  - Provides the set of methods / functions available from a particular language or library environment
+- **System calls** are the programming interface to the services as provided by the OS
+  - We sometimes even refer to them as **system-call interface**
+- Implementation of interface is usually in a high-level language such as C or C++
+  - Oftentimes functions in this interface are called directly by methods / functions in a related API rather than directly by the programmer
+- Two most-widely used system-oriented APIs at present
+  -  **Win32 API** (note that even though many installations are currently 64 bit, we do not yet refer to them as Win64 API)
+  - **POSIX API:** Standardized Unix system-call interface (Portable Operating System Interface, also known as ISO/IEC 9945)
+- Other programming APIs are built on top of these
+  - Pretty much all versions of Unix (including macOS) use POSIX
+  -  Java API sits on top of either Win32 or POSIX
+- Although we will focus on Unix/POSIX in this course... 
+  - ... the names used for system call instances will be more generalized.
+
+#### Examples
+
+- System call sequence to copy the contents of one file to another file
+
+![image-20230118145533763](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118145533763.png)
+
+![image-20230118145550003](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118145550003.png)
+
+## System Calls implementation
+
+- Typically each individual system call operation boils down to a single **number**
+  -  The actual system-call interface is maintained via a table indexed according to these numbers.
+  - **The code for the OS kernel uses these numbers as indexes into a large switch statement in the kernel**
+- That is:
+  - The system-call interface invokes the intended system call function itself in the OS kernel by providing the number..
+  - ... and the OS kernel returns the status of the system call and any return values.
+
+## API - System Call - OS relationship
+
+![image-20230118145705059](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118145705059.png)
+
+# Lecture 5
+
+
 
 
 
