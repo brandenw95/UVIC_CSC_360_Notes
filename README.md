@@ -100,7 +100,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 - One or more CPUs, device controllers connect through a common bus
 - Access a shared memory
-- Physically concurrent CPUs and devices compete for memory cycles![image-20230111145342623](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145342623.png)
+- Physically concurrent CPUs and devices compete for memory cycles![image-20230111145342623](assets\image-20230111145342623.png)
 
 ## Computer-System Operation
 
@@ -124,9 +124,9 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## Interrupt Timeline
 
-![image-20230111145741515](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145741515.png)
+![image-20230111145741515](assets\image-20230111145741515.png)
 
-![image-20230111145806158](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230111145806158.png)
+![image-20230111145806158](assets\image-20230111145806158.png)
 
 ## Interrupt Handling 
 
@@ -149,7 +149,7 @@ To understand how a set of computing resources can be shared safely, efficiently
   - Approach 2: device is associated with a particular spot in the **interrupt vector**, therefore the fact of the interrupt directly indicates starting address of handler’s code.
   - The approach used depends upon OS, hardware architecture, device type.
 
-![image-20230112143554678](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112143554678.png)
+![image-20230112143554678](assets\image-20230112143554678.png)
 
 - Code in the handler for the interrupt determine actions to take.
 - After handler’s work is completed, **CPU state is restored.**
@@ -181,7 +181,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## Storage-Device Hierarchy
 
-![image-20230112143703796](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112143703796.png)
+![image-20230112143703796](assets\image-20230112143703796.png)
 
 ## Caching
 
@@ -202,7 +202,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## How a Modern Computer Works
 
-![image-20230112144326709](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112144326709.png)
+![image-20230112144326709](assets\image-20230112144326709.png)
 
 ## Computer-System Architecture
 
@@ -228,7 +228,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## Symmetric Multiprocessing Architecture
 
-![image-20230112144636612](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112144636612.png)
+![image-20230112144636612](assets\image-20230112144636612.png)
 
 ## A Dual-Core Design
 
@@ -236,7 +236,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 - Systems containing all chips
   - Chassis containing multiple separate systems
 
-![image-20230112144734940](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112144734940.png)
+![image-20230112144734940](assets\image-20230112144734940.png)
 
 ## Operating System Structure
 
@@ -255,7 +255,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## Memory Layout for Multi-programmed System
 
-![image-20230112145107228](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230112145107228.png)
+![image-20230112145107228](assets\image-20230112145107228.png)
 
 # Lecture 3 (16-01-2013)
 
@@ -285,7 +285,7 @@ To understand how a set of computing resources can be shared safely, efficiently
   - When counter zero generate an interrupt
   - Set up before scheduling process to regain control or terminate program that exceeds allotted time
 
-![image-20230117191901751](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117191901751.png)
+![image-20230117191901751](assets\image-20230117191901751.png)
 
 ## Process Management
 
@@ -351,13 +351,13 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## Performance of Various Levels of Storage
 
-![image-20230117193006301](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117193006301.png)
+![image-20230117193006301](assets\image-20230117193006301.png)
 
 ## Migration of data “A” from Disk to Register
 
 - Multitasking environments must be careful to use most recent value, no matter where it is stored in the storage hierarchy
 
-  ![image-20230117193031063](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117193031063.png)
+  ![image-20230117193031063](assets\image-20230117193031063.png)
 
 - Multiprocessor environment must provide cache coherency in hardware such that all CPUs have the most recent value in their cache
 
@@ -398,7 +398,7 @@ To understand how a set of computing resources can be shared safely, efficiently
   - That is, **only those parts of a task that are needed in physical memory need be resident.**
   - This is known as **virtual memory.**
 
-![image-20230117200222273](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117200222273.png)
+![image-20230117200222273](assets\image-20230117200222273.png)
 
 ## Virtualization
 
@@ -418,7 +418,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 - **VMM** can run natively, in which case they are also the **host**
   - There is no general purpose host then (VMware ESX and Citrix XenServer)
 
-![image-20230117200432347](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117200432347.png)
+![image-20230117200432347](assets\image-20230117200432347.png)
 
 ## Cloud Computing
 
@@ -426,7 +426,7 @@ To understand how a set of computing resources can be shared safely, efficiently
   - Internet connectivity requires security like firewalls
   - Load balancers spread traffic across multiple applications
 
-![image-20230117200624147](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230117200624147.png)
+![image-20230117200624147](assets\image-20230117200624147.png)
 
 ## Real-Time Embedded Systems
 
@@ -500,9 +500,9 @@ To understand how a set of computing resources can be shared safely, efficiently
 - For each error, OS should **take appropriate steps to respond** in such a way that computer behaves **consistently and correctly**
 -  OS can provide **debugging facilities** which can greatly enhance both the user’s and the programmer’s ability to use the OS efficiently.
 
-![image-20230118144850758](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118144850758.png)
+![image-20230118144850758](assets\image-20230118144850758.png)
 
-![image-20230118144910597](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118144910597.png)
+![image-20230118144910597](assets\image-20230118144910597.png)
 
 ## System Calls
 
@@ -526,9 +526,9 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 - System call sequence to copy the contents of one file to another file
 
-![image-20230118145533763](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118145533763.png)
+![image-20230118145533763](assets\image-20230118145533763.png)
 
-![image-20230118145550003](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118145550003.png)
+![image-20230118145550003](assets\image-20230118145550003.png)
 
 ## System Calls implementation
 
@@ -541,7 +541,7 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ## API - System Call - OS relationship
 
-![image-20230118145705059](C:\Users\the_d\Documents\GitHub\UVIC_CSC_360_Notes\assets\image-20230118145705059.png)
+![image-20230118145705059](assets\image-20230118145705059.png)
 
 # Lecture 5
 
