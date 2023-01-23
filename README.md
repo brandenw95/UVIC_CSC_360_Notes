@@ -1052,7 +1052,7 @@ int main() {
   - After that, we will return to consider OS structure
   - By better understanding processes, we will begin to see **the distinctions made by different OS design**
 
-# Lecture 7 (26-)
+# Lecture 7 ()
 
 
 
