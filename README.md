@@ -653,7 +653,7 @@ To understand how a set of computing resources can be shared safely, efficiently
   - Group identifier **(group ID**) allows set of users to be defined and controls managed, then also associated with each process, file
   - **Privilege escalation** allows user to change to effective ID with more rights
 
-# Lecture 4 (18-01-2013)
+# Lecture 4 (18-01-2023)
 
 ## Virtual memory
 
@@ -811,7 +811,248 @@ To understand how a set of computing resources can be shared safely, efficiently
 
 ![image-20230118145705059](assets/image-20230118145705059.png)
 
-# Lecture 5
+# Lecture 5 (20-01-2023)
+
+## System Call Parameter Passing
+
+- Often, more information is required than simply identity of desired system call
+  - Exact type and amount of information vary according to OS and call
+- Three general methods used to pass parameters to the OS
+  - Simplest: pass the parameters in registers
+    - In some cases, may be more parameters than registers
+  - Parameters stored in a block, or table, in memory, and address of block passed as a parameter in a register
+    - This approach taken by Linux and Solaris
+  - Parameters placed, or pushed, onto the stack by the program and popped off the stack by the operating system
+  - Block and stack methods do not limit the number or length of parameters being passed
+
+## Parameter Passing via Table
+
+![image-20230123143304921](assets/image-20230123143304921.png)
+
+## Types of System Calls
+
+- Six main groups
+
+1. process control 
+2. file management 
+3. device management
+4. system information management
+5. communications
+6. protection
+
+#### Process control
+
+- create process, terminate process (ex. fork())
+- end, abort (ex. exit())
+- load, execute
+- get process attributes, set process attributes
+- wait for time
+- wait event, signal event (ex. wait())
+- allocate and free memory
+- Dump memory if error
+- Debugger for determining bugs, single step execution
+- Locks for managing access to shared data between processes
+
+#### File Management
+
+- create file, delete file (e.g., open(), create(), unlink())
+- open, close file (e.g., open(), close())
+- read, write, reposition (e.g., read(), write ())
+- get and set file attributes (e.g., stat())
+
+#### Device management
+
+- Request device, release device
+- read, write, reposition 
+- get device attributes, set device attributes (e.g., ioctl())
+-  logically attach or detach devices (e.g., mount())
+
+#### System Information maintenance
+
+- get time or date, set time or date (e.g., time())
+- get system data, set system data
+- get and set process, file, or device attributes (e.g., setpid())
+
+#### Communications
+
+- create, delete communication connection (e.g., pipe(), socket ()) 
+- send, receive messages (e.g., connect(), send(), recv())
+- Shared-memory model create and gain access to memory regions (e.g., shmget(), mmap ())
+- transfer status information
+- attach and detach remote devices
+
+#### Protection 
+
+- Control access to resources (e.g., chown(), chgrp())
+- Get and set permissions (e.g., stat(), chmod())
+- Allow and deny user access
+
+## Examples of Windows and Unix System Calls
+
+![image-20230123144006259](assets/image-20230123144006259.png)
+
+## Role of C standard library
+
+- **In this course we will use the C programming language in order to explore OS concepts**
+- When working with this language, we depend upon its **standard library**
+  - This is really just an API
+  - The adjective used here (“standard”) indicates that the API’s functions, parameters, and the behavior of implemented functions conforms to the POSIX standard
+- The standard library makes use of OS services through a proper sequence of system calls
+- Some standard-library functions are one-to-one mappings with systems call
+  - But functions are provided to ensure C programs are more easily writable and readable
+  - Ex. printf()
+
+# Lecture 6 (23-01-2023)
+
+```assembly
+ To compile:
+; nasm nasm -f elf64 hello.asm
+;
+; To link:
+; ld -s -o hello hello.o
+;
+section .data
+    hello:     db 'Hello world!',10    ; 'Hello world!' plus a linefeed character
+    helloLen:  equ $-hello             ; Length of the 'Hello world!' string
+                                       ; (I'll explain soon)
+
+section .text
+    global _start
+
+_start:
+    mov eax,4            ; The system call for write (sys_write)
+    mov ebx,1            ; File descriptor 1 - standard output
+    mov ecx,hello        ; Put the offset of hello in ecx
+    mov edx,helloLen     ; helloLen is a constant, so we don't need to say
+                         ;  mov edx,[helloLen] to get it's actual value
+    int 80h              ; Call the kernel
+
+    mov eax,1            ; The system call for exit (sys_exit)
+    mov ebx,0            ; Exit with return code of 0 (no error)
+    int 80h
+
+```
+
+```c
+/*
+    To Compile:
+    gcc hello.c -o hello
+*/
+#include <stdio.h>
+
+int main() {
+    printf("Hello world!\n");
+    
+}
+
+```
+
+## Standard C Library Example
+
+![image-20230123144231237](assets/image-20230123144231237.png)
+
+![image-20230123144250546](assets/image-20230123144250546.png)
+
+## System Programs
+
+- These help to provide a convenient environment for both program development, execution, and testing
+- **The following six categories** can be used the organize how we view these programs
+  - A. File manipulation 
+  - B. Status information (i.e., filesystem metadata) 
+  - C. Program loading and execution 
+  - D. Communications 
+  - E. Background services 
+  - F. Application programs
+- **Note that most users’ view of the OS is defined by system programs, not the actual system calls**
+
+- Also:
+  - Some of the programs are simply user interfaces to system calls. 
+  - Other programs are very much more complex
+- Key idea:
+  - The collection of programs aim for convenience of OS use by developers, administrators, etc.
+
+#### File management
+
+- Many of you are already very familiar with these as many are Unix commands
+  -  Create, delete, copy, rename files (e.g., touch, rm, cp, mv, ln, etc.) 
+  - Print, list (e.g., lpr, enscript, ls, tree, etc.)
+  - Manipulate directories (e.g., mkdir, rmdir)
+  - Much else
+
+#### Status information
+
+- Some programs ask the system for info such as date, time, amount of available memory, disk space, number of users (e.g., date, df, who, etc.)
+- (Note that time is actually used for measuring the time taken by a process.)
+- Others provide detailed performance, logging, and debugging information (e.g., ps, top, /proc virtual file system, etc.)
+- Typically these programs format and print the output to the terminal or some other output device
+- Some system implement a **registry**
+  - Used to store and retrieve system-configuration information
+
+#### File modification
+
+- Text editors to create and modify files (e.g., vim, emacs, nano, etc.) 
+- Special commands and syntax to search contents of files or perform transformation of files
+  - Such commands as grep, find
+  - Command-shell syntax with wildcards (*, ?)
+
+#### Programming-language support
+
+- Compilers
+- Assemblers
+- Debuggers
+- Interpreters
+- Also note that some of these are actually combinations of several lower-level programs
+- Example: When compiling a C program using **gcc**, it is actually using: 
+  - A preprocessor
+  - A compiler into assembly language
+  - An assembler
+  - A linker that resolves symbols in the original program that refer to routines in the installed libraries
+
+#### Program loading and execution
+
+- These are quite powerful and somewhat complex tools to understand and use
+  - Absolute loaders
+  - Relocatable loaders
+  - Linkage editors
+  - Overlay loaders
+  - Debugging systems
+- We will look at tiny slices of these programs as is needed during the rest of this course
+
+#### Communications
+
+- These provide mechanisms for creating virtual connections amongst:
+  - processes
+  - users
+  - computer systems
+- You already use many of these programs
+  - E-mail clients
+  - Remote login (e.g., ssh)
+  - File transfer (e.g., sftp, scp)
+
+## What remains: application; background
+
+- Application programs
+  - Are normally not specific to the system on which they are installed
+  -  Also normally run by users
+  - Typically not considered part of the OS (although they may ship with an OS distribution)
+  - Launched by command line, GUI click, finger poke, etc.
+- Background service
+  - Launched at boot time
+  - Facilities such as **disk checking, process scheduling, error logging, printing**
+  - On some systems: **audio interface, video interface**
+
+## Summary
+
+- We have spent some effort to tour the **system interface**
+- This is organization around a complex of: 
+  - **system calls**
+  - **system programs**
+- As computer programmers make use all of this in order to create software that utilizes services provided by a running operating system
+- Next: We need to dig deeper into concept of a **process**
+  - After that, we will return to consider OS structure
+  - By better understanding processes, we will begin to see **the distinctions made by different OS design**
+
+# Lecture 7 (26-01-202)
 
 
 
