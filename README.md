@@ -1134,6 +1134,8 @@ int main() {
 
 ![image-20230125144458212](assets/image-20230125144458212.png)
 
+# Lecture 8 (26-01-2023)
+
 ## Process Representation in Linux
 
 ```c
@@ -1295,6 +1297,10 @@ int main(){
   - **<u>pid = wait(&status);</u>**
 - If no parent waiting (did not invoke **wait()**) process is a **zombie**
 - If parent terminated without invoking **wait** , process is an **orphan**
+
+
+
+
 
 # Chapter 1 (Introduction)
 
