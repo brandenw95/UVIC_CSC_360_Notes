@@ -1134,8 +1134,6 @@ int main() {
 
 ![image-20230125144458212](assets/image-20230125144458212.png)
 
-# Lecture 8 (26-01-2023)
-
 ## Process Representation in Linux
 
 ```c
@@ -1149,6 +1147,10 @@ struct mm_struct *mm;      /* address space of this process */
 ```
 
 ![image-20230125144742656](assets/image-20230125144742656.png)
+
+# Lecture 8 (26-01-2023)
+
+
 
 ## Process Scheduling
 
