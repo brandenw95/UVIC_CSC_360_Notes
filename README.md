@@ -1170,23 +1170,131 @@ struct mm_struct *mm;      /* address space of this process */
 
 ## Schedulers
 
+- **Short-term scheduler** (or **CPU scheduler**) – selects which process should be executed next and allocates CPU
+  - Sometimes the only scheduler in a system
+  - Short-term scheduler is invoked frequently (milliseconds) (must be fast)
+- **Long-term scheduler** (or **job scheduler**) – selects which processes should be brought into the ready queue
+  - Long-term scheduler is invoked infrequently (seconds, minutes) (may be slow)
+  - The long-term scheduler controls the **degree of multiprogramming**
+- Processes can be described as either:
+  - **I/O-bound process** – spends more time doing I/O than computations, many short CPU bursts
+  - **CPU-bound process** – spends more time doing computations; few very long CPU bursts
+- Long-term scheduler strives for good process mix
+
 ## Addition of Medium Term Scheduling
+
+- **Medium-term scheduler** can be added if degree of multiple programming needs to decrease
+  - Remove process from memory, store on disk, bring back in from disk to continue execution: **swapping**
+
+![image-20230125145946585](assets/image-20230125145946585.png)
 
 ## Multitasking in Mobile Systems
 
+- Some mobile systems (e.g., early version of iOS) allow only one process to run, others suspended
+- Due to screen real estate, user interface limits iOS provides for a
+  - Single **foreground** process- controlled via user interface
+  - Multiple **background** processes– in memory, running, but not on the display, and with limits
+  - Limits include single, short task, receiving notification of events, specific long-running tasks like audio playback
+- Android runs foreground and background, with fewer limits 
+  - Background process uses a **service** to perform tasks
+  - Service can keep running even if background process is suspended
+  - Service has no user interface, small memory use
+
 ## Context Switch
+
+- When CPU switches to another process, the system must save the state of the old process and load the saved state for the new process via a context switch
+- Context of a process represented in the PCB
+- Context-switch time is overhead; the system does no useful work while switching
+  - The more complex the OS and the PCB
+    - the longer the context switch
+- Time dependent on hardware support
+  - Some hardware provides multiple sets of registers per CPU
+    - multiple contexts loaded at once
 
 ## Operations on Processes
 
+- System **must** provide mechanisms for:
+  - process **creation**
+  - process **termination**
+  - **Interprocess communication**
+
 ## Process Creation
+
+- **Parent** process create **children** processes, which, in turn create other processes, forming a **tree** of processes
+- Generally, process identified and managed via a **process identifier (pid)**
+- Resource sharing options
+  - Parent and children share all resources
+  - Children share subset of parent’s resources
+  - Parent and child share no resources
+- Execution options
+  - Parent and children execute concurrently
+  - Parent waits until children terminate
 
 ## A Tree of Processes in Linux
 
+![image-20230125150517528](assets/image-20230125150517528.png)
+
 ## Process Creation (Cont.)
+
+- Address space
+  - Child duplicate of parent
+  - Child has a program loaded into it
+- UNIX examples
+  - fork() system call creates new process
+  - exec() system call used after a fork() to replace the process’ memory space with a new program
+
+![image-20230125150610212](assets/image-20230125150610212.png)
 
 ## C Program Forking Separate Process
 
+```c
+#include <sys/types.h>
+#include <std.io>
+#include <unist.h>
+
+int main(){
+    pid_t pid;
+    
+    // Fork child process
+    pid = fork();
+    
+    if (pid < 0){
+        //Error Occured
+        fprintf(stderr, "Fork Failed");
+        return 1;
+    }
+    else if (pid == 0){
+        //child Process
+        execlp("/bin/ls", "ls", NULL);
+    }
+    else{
+        //Parent Process
+        // Wait for the child to complete
+        wait(NULL);
+        printf("Child Comlete");
+    }
+    Return 0;
+}
+```
+
+
+
 ## Process Termination
+
+- Process executes last statement and then asks the operating system to delete it using the **exit()** system call.
+  - Returns status data from child to parent (via **wait())**
+  - Process’ resources are deallocated by operating system
+- Parent may terminate the execution of children processes using the **abort()** system call. Some reasons for doing so:
+  - Child has exceeded allocated resources
+  - Task assigned to child is no longer required
+  - The parent is exiting and the operating systems does not allow a child to continue if its parent terminate
+- Some operating systems do not allow child to exists if its parent has terminated. If a process terminates, then all its children must also be terminated.
+- **cascading termination**. All children, grandchildren, etc. are terminated. 
+- The termination is initiated by the operating system.
+- The parent process may wait for termination of a child process by using the wait() system call. The call returns status information and the pid of the terminated process 
+  - **<u>pid = wait(&status);</u>**
+- If no parent waiting (did not invoke **wait()**) process is a **zombie**
+- If parent terminated without invoking **wait** , process is an **orphan**
 
 # Chapter 1 (Introduction)
 
