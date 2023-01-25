@@ -1052,11 +1052,141 @@ int main() {
   - After that, we will return to consider OS structure
   - By better understanding processes, we will begin to see **the distinctions made by different OS design**
 
-# Lecture 7 ()
+# Lecture 7 (25-01-2023) 
 
+## Outline - Processes
 
+- Process Concept
+- Process Scheduling
+- Operations on Processes
+- Interprocess Communication
 
+## Objectives
 
+- To introduce the notion of a process
+- To describe the various features of processes, including scheduling, creation and termination, and communication
+- To explore interprocess communication using shared memory and message passing
+- To describe communication in client-server systems
+
+## Process Concept
+
+- Process:
+  - a **compiled program** in **execution**, which forms the basis of all computation 
+  - process execution must progress in a sequential manner
+  - Program is **passive** entity stored on disk (**executable file**), process is ***active***
+    - Program becomes process when executable file loaded into memory
+- Multiple parts
+  - The program code, also called **text section**
+  -  Current activity including **program counter**, processor registers
+  - **Stack** containing temporary data
+  - Function parameters, return addresses, local variables
+  - **Data section** containing global variables
+  - **Heap** containing memory dynamically allocated during run time
+
+## Processes and Threads
+
+- A process is usually represented by a private data structure that contains at least an identity, priority level, state of execution (running, ready, suspended) and resources associated with the process.
+- A thread is a lightweight process and must reside within some regular process and make use of the resources of that particular process only.
+
+![image-20230125143808269](assets/image-20230125143808269.png)
+
+## Process in Memory
+
+![image-20230125143824401](assets/image-20230125143824401.png)
+
+## Process State
+
+- As a process executes, it changes its state
+  - **new**: The process is being created
+  - **running**: Instructions are being executed
+  - **waiting:** The process is waiting for some event to occur
+  - **ready:** The process is waiting to be assigned to a processor
+  - **terminated:** The process has finished execution
+
+![image-20230125144101634](assets/image-20230125144101634.png)
+
+## Process Control Block (PCB)
+
+- Information associated with each process
+- (also called task **control block**)
+  - Process state – running, waiting, etc
+  - Program counter – location of instruction to next execute
+  - CPU registers – contents of all process-centric registers
+  - CPU scheduling information- priorities, scheduling queue pointers
+  -  Memory-management information – memory allocated to the process
+  - Accounting information – CPU used, clock time elapsed since start, time limits
+  - I/O status information – I/O devices allocated to process, list of open files
+
+![image-20230125144311416](assets/image-20230125144311416.png)
+
+## Context switch
+
+- When CPU switches to another process, the system must **save the state** of the old process and load the **saved state** for the new process via a **context switch**
+- **Context** of a process represented in the PCB
+- Context-switch time is overhead; the system does no useful work while switching
+  - The more complex the OS and the PCB
+    - the longer the context switch
+- Time dependent on hardware support
+  - Some hardware provides multiple sets of registers per CPU
+    -  multiple contexts loaded at once
+
+## CPU Switch From Process to Process
+
+![image-20230125144458212](assets/image-20230125144458212.png)
+
+## Process Representation in Linux
+
+```c
+pid t_pid;                  /* process identifier */ 
+long state;                 /* state of the process */ 
+unsigned int time_slice     /* scheduling information */
+struct task_struct *parent; /* this process’s parent */ 
+struct list_head children;  /* this process’s children */ 
+struct files_struct *files; /* list of open files */ 
+struct mm_struct *mm;      /* address space of this process */
+```
+
+![image-20230125144742656](assets/image-20230125144742656.png)
+
+## Process Scheduling
+
+- Maximize CPU use, quickly switch processes onto CPU for time sharing
+- **Process scheduler** selects among available processes for next execution on CPU
+- Maintains **scheduling** queues of processes
+  - **Job queue** – set of all processes in the system
+  - Ready queue – set of all processes residing in main memory, ready and waiting to execute
+  - **Device queues** – set of processes waiting for an I/O device
+  - Processes migrate among the various queues
+
+## Ready Queue And Various I/O Device Queues
+
+![image-20230125145345634](assets/image-20230125145345634.png)
+
+## Representation of Process Scheduling
+
+- **Queueing diagram** represents queues, resources, flows
+
+![image-20230125145418048](assets/image-20230125145418048.png)
+
+## Schedulers
+
+## Addition of Medium Term Scheduling
+
+## Multitasking in Mobile Systems
+
+## Context Switch
+
+## Operations on Processes
+
+## Process Creation
+
+## A Tree of Processes in Linux
+
+## Process Creation (Cont.)
+
+## C Program Forking Separate Process
+
+## Process Termination
 
 # Chapter 1 (Introduction)
 
