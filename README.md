@@ -1150,8 +1150,6 @@ struct mm_struct *mm;      /* address space of this process */
 
 # Lecture 8 (26-01-2023)
 
-
-
 ## Process Scheduling
 
 - Maximize CPU use, quickly switch processes onto CPU for time sharing
@@ -1300,9 +1298,141 @@ int main(){
 - If no parent waiting (did not invoke **wait()**) process is a **zombie**
 - If parent terminated without invoking **wait** , process is an **orphan**
 
+# Lecture 9 (01-30-2023)
 
+## Interprocess Communication
 
+- Processes within a system may be ***independent*** or ***cooperating***
+-  Cooperating process can affect or be affected by other processes, including sharing data
+- Reasons for cooperating processes:
+  - Information sharing
+  - Computation speedup
+  - Modularity
+  - Convenience
+- Cooperating processes need interprocess communication (IPC)
+- Two models of IPC
+  - **Shared memory**
+  - **Message passing**
 
+## Communications Models
+
+![image-20230130145141591](assets/image-20230130145141591.png)
+
+## Interprocess Communication – Shared Memory
+
+- This describes an **area of main memory** shared among several processes in order to facilitate their communication
+- This communication appears to be under the control of code running in the associated user processes
+  - Although the OS is involved in initial setup of the shared memory, subsequent use of that memory by processes does not require a system call
+- **Major issue:**
+  - Provision of mechanisms to allow user processes a method for synchronizing their actions (to ensure correct behavior)
+  - As already mentioned, we will dig into this when examine concurrency in great detail.
+
+![image-20230130145523974](assets/image-20230130145523974.png)
+
+![image-20230130145542049](assets/image-20230130145542049.png)
+
+## Interprocess Communication – Message Passing
+
+- A message system:
+  - Processes communicate to each other via a messages
+  - These messages are actually data structures allocated in main memory and used by the communication processes
+  - Note this memory is not explicitly shared as in the previous IPC mechanism.
+- **Need at least two operations**
+  - Sending: **<u>send(&queue, &message)</u>**
+  - Receiving: **<u>recv(&queue, &message)</u>**
+  - (Assuming there exists code for initial setup of queues)
+  - The implementation of these is usually in a message-passing library provided by the language API
+  - Implementations will indirectly involve the use of system calls
+
+![image-20230130145726451](assets/image-20230130145726451.png)
+
+![image-20230130145741649](assets/image-20230130145741649.png)
+
+- Even though the queues may be reflected by structures in main memory...
+- ... the model could permit processes to exist in separate computer systems!
+- Implementation of computer link:
+  - Physical: exploit shared memory further; hardware bus; network
+- Also there exist many approaches to the semantics of message passing:
+  - **direct** or **indirect** message addressing
+  - **synchronous** or **asynchronous** message-passing calls
+  - **automatic** or **explicit** buffering
+
+## Direct Communication
+
+- **Communicating processes must some address each other explicitly**
+  - Here the message queue is implied...
+  - <u>send(P, message)</u> – send a message to process P
+  - <u>receive(Q, message)</u> – receive a message from process Q
+- Properties of **communication link**
+- Links are established automatically by the OS
+  - Each link is associated with exactly one pair of communicating processes (and only one pair)
+  - Between each pair there normally exists at most one link
+  - The link may be half-duplex, but a full-duplex connection can be approximated by have two half-duplex links (i.e., each in the opposite direction)
+
+- Messages are directed and received from mailboxes (also referred to as ports)
+  - Each mailbox has a unique id created by the OS
+  - Processes can communicate via the mailbox **only if they share the unique mailbox ID**
+- Properties of a such **communication link**
+  - Normally a link is established only if processes share a common mailbox (i.e., via appropriate system calls, permissions, access control, etc.)
+  - Therefore, the link may be associated among two, three, or many processes
+  - Also: any two pairs of processes may share more than one link
+  - Link may be half-duplex or full-duplex
+
+## Indirect Communication
+
+- Operations
+  - create a new mailbox (port)
+  - send and receive messages through mailbox
+  - destroy a mailbox
+- Primitives are defined as: 
+  - <u>send(A, message)</u> – send a message to mailbox A 
+  - <u>receive(A, message)</u> – receive a message from mailbox A
+- Mailbox sharing
+  - P1, P2, and P3 share mailbox A
+  - P1, sends; P2 and P3 receive
+  - Who gets the message?
+- Solutions
+  - Allow a link to be associated with at most two processes
+  - Allow only one process at a time to execute a receive operation
+  - Allow the system to select arbitrarily the receiver. Sender is notified who the receiver was.
+
+## Synchronization
+
+- Message passing may be either blocking or non-blocking
+- **Blocking** is considered **synchronous**
+  - **Blocking send** -- the sender is blocked until the message is received 
+  - **Blocking receive** -- the receiver is blocked until a message is available
+- **Non-blocking** is considered **asynchronous**
+- **Non-blocking send** -- the sender sends the message and continue
+- **Non-blocking receive** -- the receiver receives:
+  - A valid message, or
+  - Null message
+
+- Different combinations possible
+  - If both send and receive are blocking, we have a **rendezvous**
+- Producer-consumer becomes trivial
+
+```c
+message next_produced; 
+while (true) {
+/* produce an item in next produced */ 
+    send(next_produced);
+}
+
+message next_consumed; 
+while (true) { 
+    receive(next_consumed);
+/* consume the item in next consumed */ 
+}
+```
+
+## Buffering
+
+- Queue of messages attached to the link.
+- implemented in one of three ways:
+  1. Zero capacity – no messages are queued on a link. Sender must wait for receiver (rendezvous)
+  2. Bounded capacity – finite length of n messages Sender must wait if link full
+  3. Unbounded capacity – infinite length Sender never waits
 
 # Chapter 1 (Introduction)
 
