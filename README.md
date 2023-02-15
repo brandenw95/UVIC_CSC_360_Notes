@@ -1969,6 +1969,23 @@ int main() {
 
 ![image-20230214205949146](assets/image-20230214205949146.png)
 
+```c
+// Shared vaiables 
+int turn = 0;
+
+// Some thread T0 or T1 where value of i is the distinguisher.
+
+for(;;){
+    while(turn != i){
+        // ** critical Section **
+        turn = j;
+    }
+    // **Remainder section**
+}
+```
+
+
+
 ## Failed attempt #2
 
 - Assuming here only two threads
@@ -1982,6 +1999,25 @@ int main() {
   - But does not satisfy bounded waiting
 
 ![image-20230214210138424](assets/image-20230214210138424.png)
+
+```c
+// Shared Vaiables
+
+boolean flag[] = {false, false};
+
+//Some thread T0 or T1 where value of i is the dstinguisher
+
+for(;;){
+    flag[i] = true;
+    while(flag[j]){
+        // ** critical section ** 
+        flag[i] = false
+    }
+    // Remainder setion
+}
+```
+
+
 
 ## Peterson’s Solution
 
@@ -2007,6 +2043,25 @@ int main() {
   - and bounded waiting.
 
 ![image-20230214210330560](assets/image-20230214210330560.png)
+
+```c
+// Peterson's solution - TH
+
+boolean flag[] = {false, false};
+int turn = 0;
+
+for(;;){
+    flag[i]= true;
+    turn = j;
+    while(flag[j] && turn == j){
+        // ** critical section **
+        flag[i] = false;
+    }
+    // remainder section
+}
+```
+
+
 
 ## Synchronization Hardware
 
