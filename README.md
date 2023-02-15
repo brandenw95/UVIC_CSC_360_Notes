@@ -1830,51 +1830,248 @@ int main() {
 
 ## Linux Threads
 
+- Linux refers to them as **tasks** rather than **threads**
+- Thread creation is done through **clone**() system call
+- **clone**() allows a child task to share the address space of the parent task (process)
+  - Flags control behavior
+
+![image-20230214204009860](assets/image-20230214204009860.png)
+
+- **struct task_struct** points to process data structures (shared or unique)
+
 ## Summary
 
-## Objectives
-
-## Background
-
-## Threads and problems...
-
-## Race condition
-
-## Producer-Consumer Problem
-
-## Code for producer, consumer
-
-## Race condition: solution
+- Threads are an important structural mechanism for programmatic expression of concurrency
+  - Easier to write an application using multiple threads (i.e. compared with using multiple processes)
+  - Threads can be implemented on top of a systems process model
+- There are many different realizations of threads
+  - Our course will focus on POSIX threads (pthreads) 
+  - Different models represented different relationships between user-level threads and kernel level threads
+- Creating threads is (oddly enough) the easy part! 
+  - **<u>Ensuring threads collaborate together in safe ways is the hard part.</u>**
+  - We look next at this hard part..
 
 # Lecture 14 (02-09-23)
 
-What a CS solution must have
+## Objectives
 
-How CS solutions are used
+- To present the concept of process synchronization.
+- To introduce the critical-section problem, whose solutions can be used to ensure the consistency of shared data
+- To present both software and hardware solutions of the critical-section problem
+- To examine several classical process-synchronization problems
+- To explore several tools that are used to solve process synchronization problems
 
-Failed attempt #1
+## Background
 
-Failed attempt #2
+- Processes can execute concurrently
+  - May be interrupted at any time, partially completing execution
+- Concurrent access to shared data may result in data inconsistency 
+- Maintaining data consistency requires mechanisms to ensure the orderly execution of cooperating processes
+- Illustration of the problem: 
+  - Suppose that we wanted to provide a solution to the consumer-producer problem that fills all the buffers. We can do so by having an integer counter that keeps track of the number of full buffers. Initially, counter is set to 0. It is incremented by the producer after it produces a new buffer and is decremented by the consumer after it consumes a buffer
 
-Peterson’s Solution
+## Threads and problems...
 
-Successful attempt
+![image-20230214204519835](assets/image-20230214204519835.png)
 
-Synchronization Hardware
+## Race condition
+
+- Describes situation where outcome of computation depends upon: 
+  - relative speed of processes, or
+  -  interleaving of operations, or
+  - both.
+- Debugging programs that have race conditions is very, Very, VERY hard
+  -  Interleaving is often dependent upon seemingly random events
+  -  Hard to replicate
+  - Not always present (i.e., race conditions may show up infrequently)
+- Presence of race condition often indicated by weird and unexplained behavior… 
+  -  … yet identifying the race condition takes much ingenuity!
+
+## Producer-Consumer Problem
+
+![image-20230214204641160](assets/image-20230214204641160.png)
+
+- Classic problem involving multiple threads
+  - One thread is the **producer**
+  - One thread is the **consumer** 
+  - A **bounded buffer** in shared memory used to transfer items from producers to consumers
+- We construct a solution that makes use of all buffers slots if needed: 
+  - Need an integer **count** variable
+  - Its value corresponds to number of full buffer slots.
+  - Initial value of **count** is zero.
+  - After producing an item, **we increment the count**
+  - After consuming an item, **we decrement the count**
+  - We also have in and out variables (i.e., slot in buffer in which producer adds items, slot in buffer form which consumer takes an item)
+  - (For now we'll just focus on the **count** variable)
+
+## Code for producer, consumer
+
+![image-20230214204825064](assets/image-20230214204825064.png)
+
+## Race condition: solution
+
+- Three observations: 
+  - Part of the time a thread is **busy doing internal calculations** 
+  - Part of the time a thread may need to **access shared memory or files** 
+  - Part of the time a thread may need to do **other important actions leading to apparent** **race conditions.**
+- Item 2 is referred to as a **critical section (CS)** 
+  - Dealing with the resulting races is referred to as a solution to the critical section problem
+  - There **may exist many such sections** in a program
+  - Key point is that it is often a part of a program where shared memory is accessed.
+  - Insight is that we could try to ensure no two threads are ever in related critical sections at the same time.
+  - **But a bit more is needed.**
 
 # Lecture 15 (02-13-23)
 
-Lock version of CS problem
+## What a CS solution must have
 
-TestAndSet
+- **Mutual Exclusion**
+  - If thread T is executing in its critical section, then no other threads can be executing in their corresponding critical sections
 
-Swap
+- **Progress**
+  - If no thread is executing in its critical section… 
+  -  ... and there exist some threads that wish to enter their related critical section…
+  -  ... then the selection of the threads that will enter the critical section next cannot be postponed indefinitely
 
-A bit more about hardware
+- **Bounded Waiting:** 
+  - A limit (a "bound") must exist…
+  -  ... on the number of times that other threads are allowed to enter their critical sections…
+  -  ... after a thread has made a request to enter its critical section and before that request is granted
 
-Major caveat
+- **No assumptions about relative speed of threads/processes**
 
-More than two threads?
+## How CS solutions are used
+
+- General structure of thread is as shown on right 
+  -  Entry and exit sections are specific to the chosen critical-section solution.
+  - These sections surround the critical section itself
+- Most often the thread synchronizing via such a solution uses shared variables for that purpose 
+  - There is a wee danger of infinite regress here…
+  - … but in practice we have hardware support for bits and pieces of such solutions.
+
+![image-20230214205836928](assets/image-20230214205836928.png)
+
+## Failed attempt #1
+
+- Assuming here only two threads
+  - T0 and T1
+  - In T0, i is set to 0, j is set to 1 
+  -  In T1, i is set to 1, j is set to 0
+- One shared variable
+  - Named turn
+  -  Its value indicates which of the two threads may enter the critical section
+- Satisfies **mutual exclusion…**
+  - But does not satisfy **progress**
+
+![image-20230214205949146](assets/image-20230214205949146.png)
+
+## Failed attempt #2
+
+- Assuming here only two threads
+  - T0 and T1
+  - In T0, i is set to 0, j is set to 1
+  - In T1, i is set to 1, j is set to 0
+- One shared variable
+  - Array of booleans named **flag**
+  - If flag[i] is true, then Ti may enter its critical section
+- Satisfies mutual exclusion…
+  - But does not satisfy bounded waiting
+
+![image-20230214210138424](assets/image-20230214210138424.png)
+
+## Peterson’s Solution
+
+- Successful attempt
+  - Builds on previous two failed solutions
+  - Also a two-thread solution
+- Major assumption:
+  - LOAD and STORE instructions (i.e., read and write to memory) are atomic operations
+  - that is, they cannot be interrupted.
+- The two threads share two variables:
+  -  int turn
+  - boolean flag[2]
+
+## Successful attempt
+
+- Assuming here only two threads
+  - T0 and T1
+  - In T0, i is set to 0, j is set to 1
+  - In T1, i is set to 1, j is set to 0
+- Two shared variables
+- Satisfies mutual exclusion…
+  -  and progress ...
+  - and bounded waiting.
+
+![image-20230214210330560](assets/image-20230214210330560.png)
+
+## Synchronization Hardware
+
+- Recall our chicken-and-egg problem:
+  - Processes using shared variables have possible race conditions… 
+  - … and to prevent these races, we protect the critical sections (i.e., instructions actually accessing the data)…
+  - … yet to protect the critical section, we need shared variables!
+- Many systems provide hardware support to solve this problem in entry and exit section code
+- Uniprocessors: **Could disable interrupts**
+  - Currently running code would execute without preemption 
+  - Generally too inefficient on multiprocessor systems
+  - OSes using this scheme are not easily scalable
+  - Generally only sensible with simple, non-preemptive kernels
+- Current processors provide special atomic hardware instructions 
+  - “Atomic” implies non-interrupted
+  -  **Option 1:** test memory word and set value (“test and set”)
+  - **Option 2:** swap contents of two memory words (“exchange”)
+
+## Lock version of CS problem
+
+- Entering a critical section becomes the same as acquiring the CS’s lock
+- Exiting a critical section becomes the same as releasing the CS’s lock
+- Lock is to be implemented with code using atomic machine instructions 
+  - Assumption here also is that a single write to memory is atomic.
+- The lock approach is sometimes called mutual exclusion ...
+  -  ... but is not a mutex! (We’ll describe these structures very soon...)
+
+![image-20230214210554331](assets/image-20230214210554331.png)
+
+## TestAndSet
+
+![image-20230214210606748](assets/image-20230214210606748.png)
+
+## Swap
+
+![image-20230214210622907](assets/image-20230214210622907.png)
+
+## A bit more about hardware
+
+- Some architectures support a Compare-And-Swap instruction
+  - Intel: CMPXCHG8B
+- Some systems used test-and-set operations available from other electronic components
+  - e.g., Dual-port RAM
+- ARM architecture: SWP and SWPB
+  - SWP r1, r2, [r0]
+  - Simultaneously swaps r2 with location [r0], and [r0] value stored in r1.
+
+![image-20230214210721051](assets/image-20230214210721051.png)
+
+## Major caveat
+
+- All of the “lock” schemes using hardware are still only partial solutions to the CS problem
+  - **Mutual Exclusion** is solved
+  - But what of: **Progress? Bounded waiting?**
+- For this we need to add a bit more to the solution.
+
+## More than two threads?
+
+- There do exist software-only solutions to the **N-threads critical-section problem**
+- However:
+  - The solutions can be hard to understand
+  - They involve lots of busy-waiting
+- In practice we use mechanisms made available either by the OS or the thread library 
+  - Threads can be suspended (i.e., they release the processor) if they are not to enter the critical section
+  - Threads can be resumed (i.e., given a chance to use the processor) if it is their turn to enter the critical section.
+
+# Lecture 16 (02-15-23)
+
+
 
 # Chapter 1 (Introduction)
 
