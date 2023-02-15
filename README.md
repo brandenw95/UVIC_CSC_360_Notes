@@ -1874,16 +1874,20 @@ int main() {
 
 ![image-20230214204519835](assets/image-20230214204519835.png)
 
+
+
+# Lecture 15 (02-13-23)
+
 ## Race condition
 
 - Describes situation where outcome of computation depends upon: 
   - relative speed of processes, or
-  -  interleaving of operations, or
+  - interleaving of operations, or
   - both.
 - Debugging programs that have race conditions is very, Very, VERY hard
   -  Interleaving is often dependent upon seemingly random events
   -  Hard to replicate
-  - Not always present (i.e., race conditions may show up infrequently)
+  -  Not always present (i.e., race conditions may show up infrequently)
 - Presence of race condition often indicated by weird and unexplained behavior… 
   -  … yet identifying the race condition takes much ingenuity!
 
@@ -1904,6 +1908,8 @@ int main() {
   - We also have in and out variables (i.e., slot in buffer in which producer adds items, slot in buffer form which consumer takes an item)
   - (For now we'll just focus on the **count** variable)
 
+# Lecture 16 (02-15-23)
+
 ## Code for producer, consumer
 
 ![image-20230214204825064](assets/image-20230214204825064.png)
@@ -1920,8 +1926,6 @@ int main() {
   - Key point is that it is often a part of a program where shared memory is accessed.
   - Insight is that we could try to ensure no two threads are ever in related critical sections at the same time.
   - **But a bit more is needed.**
-
-# Lecture 15 (02-13-23)
 
 ## What a CS solution must have
 
@@ -2069,7 +2073,7 @@ int main() {
   - Threads can be suspended (i.e., they release the processor) if they are not to enter the critical section
   - Threads can be resumed (i.e., given a chance to use the processor) if it is their turn to enter the critical section.
 
-# Lecture 16 (02-15-23)
+# 
 
 
 
