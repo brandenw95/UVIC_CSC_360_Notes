@@ -2045,7 +2045,7 @@ for(;;){
 ![image-20230214210330560](assets/image-20230214210330560.png)
 
 ```c
-// Peterson's solution - TH
+// Peterson's solution - THE CORRECT ONE
 
 boolean flag[] = {false, false};
 int turn = 0;
@@ -2091,7 +2091,24 @@ for(;;){
 
 ![image-20230214210554331](assets/image-20230214210554331.png)
 
-## TestAndSet
+```c
+// General scheme for use of lock
+
+lock lk;
+
+for(;;){
+    
+    some_op lk;
+    // critical section
+    some_other_op lk;
+    
+    //remainder section
+}
+```
+
+
+
+## Test-And-Set
 
 ![image-20230214210606748](assets/image-20230214210606748.png)
 
@@ -2111,6 +2128,20 @@ for(;;){
 
 ![image-20230214210721051](assets/image-20230214210721051.png)
 
+```c
+/* * Pseudo-code description of what * the chip itself would implement. */
+int compare_and_swap (int* register, int oldval, int newval){
+
+    int old_reg_val = *register;
+    
+    if (old_reg_val == oldval) { 
+        *register = newval;
+    } 
+    
+    return old_reg_val;
+}
+```
+
 ## Major caveat
 
 - All of the “lock” schemes using hardware are still only partial solutions to the CS problem
@@ -2128,9 +2159,136 @@ for(;;){
   - Threads can be suspended (i.e., they release the processor) if they are not to enter the critical section
   - Threads can be resumed (i.e., given a chance to use the processor) if it is their turn to enter the critical section.
 
-# 
+## Mutex Locks
+
+- Previous solutions are complicated and generally inaccessible to application programmers
+- OS designers build software tools to solve critical section problem
+- Simplest is mutex lock
+- Protect a critical section by first **acquire()** a lock then **release**() the lock
+  - Boolean variable indicating if lock is available or not
+- Calls to **acquire**() and **release**() must be atomic
+  - Usually implemented via hardware atomic instructions
+- But this solution requires busy waiting
+  - This lock therefore called a spinlock
+
+## acquire() and release()
+
+```c
+acquire() { 
+    while (!available);
+	available = false;
+}
+
+release(){ 
+    available = true;
+}
+
+	do{ 
+        acquire() //critical section
+		release() 
+       	//remainder section 
+    } while(true);
+```
 
 
+
+## Semaphore
+
+- Synchronization tool that provides more sophisticated ways (than Mutex locks) for process to synchronize their activities.
+- Semaphore S – integer variable
+- Can only be accessed via two indivisible (atomic) operations
+  - wait() and signal()
+    - Originally called P() and V()
+
+
+
+- **Definition of the wait() operation**
+
+```c
+wait(S){
+    while(S <= 0){
+        //busy wait
+        S--;
+    }
+}
+```
+
+- **Definition of the signal() operation**
+
+```c
+Signal(S){
+    S++;
+}
+```
+
+## Semaphore Usage
+
+- **Counting semaphore** – integer value can range over an unrestricted domain
+
+- **Binary semaphore** – integer value can range only between 0 and 1 
+
+  - Same as a mutex lock
+
+- Can solve various synchronization problems
+
+- Consider P1 and P2 that require S1 to happen before S2 Create a semaphore “synch” initialized to 0 P1:
+
+  ```C
+  P1{
+  	S1;
+      signal(sync);
+  }
+  P2{
+      wait(sync);
+      S2;
+  }
+  ```
+
+  ◼ Can implement a counting semaphore **S** as a binary semaphore
+
+## Semaphore Implementation
+
+- Must guarantee that no two processes can execute the **wait**() and **signal**() on the same semaphore at the same time
+- Thus, the implementation becomes the critical section problem where the **wait** and **signal** code are placed in the critical section 
+  - Could now have **busy waiting** in critical section implementation
+    -  But implementation code is short
+    - Little busy waiting if critical section rarely occupied
+- Note that applications may spend lots of time in critical sections and therefore this is not a good solution
+
+## Semaphore Implementation with no Busy waiting
+
+- With each semaphore there is an associated waiting queue
+- Each entry in a waiting queue has two data items: 
+  - value (of type integer)
+  - pointer to next record in the list
+
+- Two operations:
+  - block – place the process invoking the operation on the appropriate waiting queue 
+  - wakeup – remove one of processes in the waiting queue and place it in the ready queue
+
+```c
+typedef struct{
+    int value;
+    struct process *list;
+    
+} semaphore;
+
+wait(semaphore *S){ 
+    S->value--;
+    if (S->value < 0){ 
+        add this process to S->list; 
+        block();
+	} 
+}
+
+signal(semaphore *S){ 
+    S->value++; 
+    if (S->value <= 0){ 
+        remove a process P from S->list; 
+        wakeup(P);
+	} 
+}
+```
 
 # Chapter 1 (Introduction)
 
