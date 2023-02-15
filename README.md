@@ -1434,6 +1434,448 @@ while (true) {
   2. Bounded capacity – finite length of n messages Sender must wait if link full
   3. Unbounded capacity – infinite length Sender never waits
 
+# Lecture 10 (02-01-23)
+
+## Examples of IPC Systems – Shared Memory
+
+**POSIX Shared Memory**
+
+- Process first creates shared memory segment
+
+  ```C
+  shm_fd = shm_open(name, O CREAT | O RDWR, 0666);
+  ```
+
+- Also used to open an existing segment to share it
+
+- Set the size of the object
+
+  ```C
+  ftruncate(shm fd, 4096);
+  ```
+
+- Now the process could write to the shared memory
+
+  ```C
+  sprintf(shared memory, "Writing to shared memory");
+  ```
+
+## Examples IPC – Shared Memory (Producer)
+
+```C
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <fcntl.h> 
+#include <sys/shm.h> 
+#include <sys/stat.h> 
+#include <sys/mman.h> 
+
+int main() {
+	/* the size (in bytes) of shared memory object */
+	const int SIZE = 4096; /* name of the shared mem object*/
+    const char* name = "OS"; /* strings written to shared mem*/ 	
+    const char* message 0 = "Hello"; 
+    const char* message 1 = "World!";
+	int fd; 
+    
+    /* shared memory file descriptor */ 
+    char* ptr; /* pointer to shared mem object */
+	/* create the shared memory object */ 
+    fd = shm open(name, O CREAT | O RDWR, 0666); /* configure the size of the shared mem object */ 
+    ftruncate(fd, SIZE); /* memory map the shared memory object */ 
+    ptr = (char*)mmap(0,SIZE,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
+	/* write to the shared memory object */ 
+    sprintf(ptr, "%s", message 0); 
+    ptr += strlen(message 0); 
+    sprintf(ptr, "%s", message 1); 
+    ptr += strlen(message 1);
+} 
+```
+
+## Examples IPC – Shared Memory (Consumer)
+
+```c
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <fcntl.h> 
+#include <sys/shm.h> 
+#include <sys/stat.h> 
+#include <sys/mman.h> 
+
+int main() {
+	/* the size (in bytes) of shared memory object */
+	const int SIZE = 4096; /* name of the shared mem object */ 
+    const char* name = "OS"; /* shared mem file descriptor */ 
+    int fd; /* pointer to shared mem obect */ 
+    char* ptr;
+    
+	/* open the shared memory object */ 
+    fd = shm open(name, O RDONLY, 0666); /* memory map the shared memory object */ 
+    ptr = (char*) mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); /* read from the shared memory object */ 	printf("%s", (char*)ptr); /* remove the shared memory object */ 
+    shm unlink(name); 
+    return 0;
+}
+```
+
+## Pipes
+
+- Acts as a conduit allowing two processes to communicate
+- Issues:
+  - Is communication unidirectional or bidirectional?
+  - In the case of two-way communication, is it half or full-duplex? 
+  - Must there exist a relationship (i.e., **parent-child**) between the communicating processes?
+  - Can the pipes be used over a network?
+- Ordinary pipes – cannot be accessed from outside the process that created it. Typically, a parent process creates a pipe and uses it to communicate with a child process that it created.
+- Named pipes – can be accessed without a parent-child relationship
+
+## Ordinary Pipes
+
+- Ordinary Pipes allow communication in standard producer-consumer style
+- Producer writes to one end (the **write-end** of the pipe)
+- Consumer reads from the other end (the **read-end** of the pipe)
+- Ordinary pipes are therefore unidirectional
+- Require parent-child relationship between communicating processes
+
+![image-20230214190424090](assets/image-20230214190424090.png)
+
+- Windows calls these **anonymous pipes**
+- See Unix and Windows code samples in textbook
+
+## Named Pipes
+
+- Named Pipes are more powerful than ordinary pipes
+- Communication is bidirectional
+- No parent-child relationship is necessary between the communicating processes
+- Several processes can use the named pipe for communication
+- Provided on both UNIX and Windows systems
+
+## Summary
+
+- The process abstraction is essential for designing, implementing, and using an operating system
+  - Processes have a lifecycle, aspects of which can be represented by process state
+  - An OS manages processes through the use of PCBs
+- Each process has its own address space
+  - This contains program code and program state, amongst other items
+  - The OS enforces strict boundaries between address spaces, preventing one process from illegal access of another process’ address space
+- Interprocess communication is possible...
+  -  ... yet requires OS intervention
+- At present we have only considered single-threaded processes...
+  -  ... but multiple-threaded processes do not fundamentally change the process abstraction.
+
+# Lecture 11 (02-02-23)
+
+## Objectives
+
+- To introduce the notion of a thread—a fundamental unit of CPU utilization that forms the basis of multithreaded computer systems
+- To discuss the APIs for the Pthreads
+- To explore several strategies that provide implicit threading
+- To examine issues related to multithreaded programming
+- To cover operating system support for threads in Linux
+
+## Motivation
+
+- Most modern applications are multithreaded 
+- Threads run within application
+- Multiple tasks with the application can be implemented by separate threads
+  - Update display
+  - Fetch data
+  - Spell checking
+- Answer a network request
+- Process creation is heavy-weight while thread creation is light-weight
+- Can simplify code, increase efficiency
+- Kernels are generally multithreaded
+
+## Multithreaded Server Architecture
+
+![image-20230214191654680](assets/image-20230214191654680.png)
+
+## Benefits
+
+- **Responsiveness** – may allow continued execution if part of process is blocked, especially important for user interfaces
+- **Resource Sharing** – threads share resources of process, easier than shared memory or message passing
+- **Economy** – cheaper than process creation, thread switching lower overhead than context switching
+- **Scalability** – process can take advantage of multiprocessor architectures
+
+## Multicore Programming
+
+- **Multicore** or **multiprocessor** systems putting pressure on programmers, challenges include:
+  - **Dividing activities**
+  - **Balance**
+  - **Data splitting**
+  - **Data dependency**
+  - **Testing and debugging**
+- ***Parallelism*** implies a system can perform more than one task simultaneously
+- ***Concurrency*** supports more than one task making progress
+  - Single processor / core, scheduler providing concurrency
+- Types of parallelism
+  - **Data parallelism** – distributes subsets of the same data across multiple cores, same operation on each
+  - **Task parallelism** – distributing threads across cores, each thread performing unique operation
+- As # of threads grows, so does architectural support for threading 
+  - CPUs have cores as well as ***hardware** **threads***
+  - Consider Oracle SPARC T4 with 8 cores, and 8 hardware threads per core
+
+## Concurrency vs. Parallelism
+
+- Concurrent execution on single-core system:
+
+![image-20230214200548822](assets/image-20230214200548822.png)
+
+- Parallelism on a multi-core system:
+
+![image-20230214200559082](assets/image-20230214200559082.png)
+
+## Single and Multithreaded Processes
+
+![image-20230214200906046](assets/image-20230214200906046.png)
+
+## Amdahl’s Law
+
+- Identifies performance gains from adding additional cores to an application that has both serial and parallel components
+- S is serial portion
+- N processing cores
+
+![image-20230214200935231](assets/image-20230214200935231.png)
+
+- That is, if application is 75% parallel / 25% serial, moving from 1 to 2 cores results in speedup of 1.6 times
+- As N approaches infinity, speedup approaches 1 / S
+
+**Serial portion of an application has disproportionate effect on performance gained by adding additional cores**
+
+- But does the law take into account contemporary multicore systems?
+
+## User Threads and Kernel Threads
+
+- **User threads** - management done by user-level threads library
+- Three primary thread libraries:
+  - POSIX **Pthreads**
+  - Windows threads 
+  - Java threads
+- **Kernel threads** - Supported by the Kernel
+- Examples – virtually all general purpose operating systems, including
+  -  Windows
+  - Solaris
+  - Linux
+  - Tru64 UNIX
+  - Mac OS X
+
+## Multithreading Models
+
+- Many-to-One
+- One-to-One
+- Many-to-Many
+
+### Many-to-One
+
+- Many user-level threads mapped to single kernel thread 
+- One thread blocking causes all to block
+- Multiple threads may not run in parallel on multicore system because only one may be in kernel at a time
+- Few systems currently use this model
+- Examples:
+  - Solaris Green Threads
+  - GNU Portable Threads
+
+![image-20230214201540263](assets/image-20230214201540263.png)
+
+### One-to-One
+
+- Each user-level thread maps to kernel thread
+- Creating a user-level thread creates a kernel thread
+- More concurrency than many-to-one
+- Number of threads per process sometimes restricted due to overhead
+-  Examples
+  - Windows
+  - Linux
+  - Solaris 9 and later
+
+![image-20230214201636648](assets/image-20230214201636648.png)
+
+### Many-to-Many Model
+
+- Allows many user level threads to be mapped to many kernel threads
+- Allows the operating system to create a sufficient number of kernel threads
+- Solaris prior to version 9
+- Windows with the *ThreadFiber* package
+
+![image-20230214201719681](assets/image-20230214201719681.png)
+
+# Lecture 12 (02-06-23)
+
+## Two-level Model
+
+- Similar to M:M, except that it allows a user thread to be bound to kernel thread
+- Examples
+  - IRIX 
+  - HP-UX
+  - Tru64 UNIX
+  - Solaris 8 and earlier
+
+![image-20230214202324681](assets/image-20230214202324681.png)
+
+## Thread Libraries
+
+- **Thread library** provides programmer with API for creating and managing threads
+- Two primary ways of implementing
+  - Library entirely in user space
+  - Kernel-level library supported by the OS
+
+## Pthreads
+
+- May be provided either as user-level or kernel-level
+- A POSIX standard (IEEE 1003.1c) API for thread creation and synchronization
+- Specification, not implementation
+- API specifies behavior of the thread library, implementation is up to development of the library
+- Common in UNIX operating systems (Solaris, Linux, Mac OS X)
+
+## Pthreads Example
+
+![image-20230214202454872](assets/image-20230214202454872.png)
+
+## Threading Issues
+
+- Semantics of **fork()** and **exec()** system calls
+- Signal handling
+  - Synchronous and asynchronous
+- Thread cancellation of target thread
+  - Asynchronous or deferred
+- Thread-local storage
+- Scheduler Activations
+
+## Semantics of fork() and exec()
+
+- Does fork() duplicate only the calling thread or all threads?
+  - Some UNIXes have two versions of fork
+- exec() usually works as normal – replace the running process including all threads
+
+## Signal Handling
+
+- **Signals** are used in UNIX systems to notify a process that a particular event has occurred.
+- A **signal handler** is used to process signals 
+  - Signal is generated by particular event 
+  - Signal is delivered to a process 
+  - Signal is handled by one of two signal handlers: 
+    - default 
+    - user-defined
+- Every signal has **default handler** that kernel runs when handling signal
+  -  **User-defined signal handler** can override default
+  - For single-threaded, signal delivered to process
+
+- Where should a signal be delivered for multi-threaded?
+  - Deliver the signal to the thread to which the signal applies
+  - Deliver the signal to every thread in the process
+  - Deliver the signal to certain threads in the process
+  - Assign a specific thread to receive all signals for the process
+
+## Thread Cancellation
+
+- Terminating a thread before it has finished
+- Thread to be canceled is target thread
+- Two general approaches:
+  - **Asynchronous cancellation** terminates the **target thread** immediately
+  - **Deferred cancellation** allows the target thread to periodically check if it should be cancelled
+- Pthread code to create and cancel a thread:
+
+![image-20230214203026203](assets/image-20230214203026203.png)
+
+- Invoking **thread cancellation** requests a cancellation, but actual cancellation depends on thread state
+
+![image-20230214203051213](assets/image-20230214203051213.png)
+
+- If thread has cancellation disabled, cancellation remains pending until thread enables it
+- Default type is deferred
+  - Cancellation only occurs when thread reaches **cancellation point**
+    - I.e. **pthread_testcancel()**
+    - Then **cleanup handler** is invoked
+- On Linux systems, thread cancellation is handled through signals
+
+## Thread-Local Storage
+
+- **Thread-local storage (TLS)** allows each thread to have its own copy of data
+- Useful when you do not have control over the thread creation process (i.e., when using a thread pool)
+- Different from local variables
+  - Local variables visible only during single function invocation
+  - TLS visible across function invocations
+- Similar to **static** data
+  - TLS is unique to each thread
+
+## Scheduler Activations
+
+- Both M:M and Two-level models require communication to maintain the appropriate number of kernel threads allocated to the application
+- Typically use an intermediate data structure between user and kernel threads – **lightweight process (LWP)**
+  - Appears to be a virtual processor on which process can schedule user thread to run
+  - Each LWP attached to kernel thread
+  - How many LWPs to create?
+- Scheduler activations provide **upcalls** - a communication mechanism from the kernel to the **upcall handler** in the thread library
+- This communication allows an application to maintain the correct number kernel threads
+
+# Lecture 13 (02-08-23)
+
+## Windows Threads
+
+- Windows implements the Windows API – primary API for Win 98, Win NT, Win 2000, Win XP, and Win 7
+- Implements the one-to-one mapping, kernel-level
+- Each thread contains
+  - A thread id
+  - Register set representing state of processor
+  - Separate user and kernel stacks for when thread runs in user mode or kernel mode
+  - Private data storage area used by run-time libraries and dynamic link libraries (DLLs)
+- The register set, stacks, and private storage area are known as the **context** of the thread
+
+- The primary data structures of a thread include:
+  - **ETHREAD** (executive thread block) – includes pointer to process to which thread belongs and to KTHREAD, in kernel space
+  - **KTHREAD** (kernel thread block) – scheduling and synchronization info, kernel-mode stack, pointer to TEB, in kernel space
+  - **TEB** (thread environment block) – thread id, user-mode stack, thread-local storage, in user space
+
+![image-20230214203616348](assets/image-20230214203616348.png)
+
+## Linux Threads
+
+## Summary
+
+## Objectives
+
+## Background
+
+## Threads and problems...
+
+## Race condition
+
+## Producer-Consumer Problem
+
+## Code for producer, consumer
+
+## Race condition: solution
+
+# Lecture 14 (02-09-23)
+
+What a CS solution must have
+
+How CS solutions are used
+
+Failed attempt #1
+
+Failed attempt #2
+
+Peterson’s Solution
+
+Successful attempt
+
+Synchronization Hardware
+
+# Lecture 15 (02-13-23)
+
+Lock version of CS problem
+
+TestAndSet
+
+Swap
+
+A bit more about hardware
+
+Major caveat
+
+More than two threads?
+
 # Chapter 1 (Introduction)
 
 ## 1.1 - What Operating Systems Do
