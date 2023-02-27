@@ -2149,6 +2149,8 @@ int compare_and_swap (int* register, int oldval, int newval){
   - But what of: **Progress? Bounded waiting?**
 - For this we need to add a bit more to the solution.
 
+# Lecture 17 (02-27-23)
+
 ## More than two threads?
 
 - There do exist software-only solutions to the **N-threads critical-section problem**
@@ -2189,8 +2191,6 @@ release(){
        	//remainder section 
     } while(true);
 ```
-
-
 
 ## Semaphore
 
@@ -2252,7 +2252,7 @@ Signal(S){
 - Thus, the implementation becomes the critical section problem where the **wait** and **signal** code are placed in the critical section 
   - Could now have **busy waiting** in critical section implementation
     -  But implementation code is short
-    - Little busy waiting if critical section rarely occupied
+    -  Little busy waiting if critical section rarely occupied
 - Note that applications may spend lots of time in critical sections and therefore this is not a good solution
 
 ## Semaphore Implementation with no Busy waiting
@@ -2289,6 +2289,198 @@ signal(semaphore *S){
 	} 
 }
 ```
+
+## Mutex Functions (pthread)
+
+```c
+/* Mutex "m" and int "x" shared by all threads in solution. */ pthread_mutex_t m; 
+int x = 0; 
+int status;
+
+/* These lines run only once at solution's start. */ status = pthread_mutex_init(&m, NULL); 
+if (status != 0){ 
+    fprintf(stderr, "Error creating mutex 'm'\n"); 
+    exit(1);
+}
+
+/*... some other code intervening ...*/ 
+
+/* The entry section */ 
+pthread_mutex_lock(&m);
+
+/* The critical section */
+x = x + 1; 
+
+/* The exit section */
+pthread_mutex_unlock(&m);
+```
+
+```c
+int pthread_mutex_destroy(pthread_mutex_t *mutexp); 
+
+int pthread_mutexattr_init(pthread_mutexattr_t *attrp); 
+
+int pthread_mutexattr_destroy(pthread_mutexattr_t *attrp);
+
+int pthread_mutexattr_setpshared(pthread_mutexattr_t *attrp, int shared);
+
+int pthread_mutexattr_getpshared(pthread_mutexattr_t *attrp, int *shared);
+```
+
+## Problems can still occur...
+
+#### Thread 1
+
+```c
+thread1( ) {
+
+    /* use object 1 */ 
+    pthread_mutex_lock(&m1);
+    /* use objects 1 and 2 */ 
+    pthread_mutex_lock(&m2);
+
+    pthread_mutex_unlock(&m2); 
+    pthread_mutex_unlock(&m1);
+}
+```
+
+#### Thread 2
+
+```C
+thread2( ) {
+	/* use object 2 */ 
+    pthread_mutex_lock(&m2);
+	/* use objects 1 and 2 */ 
+    pthread_mutex_lock(&m1);
+
+    pthread_mutex_unlock(&m1); 
+    pthread_mutex_unlock(&m2);
+}
+```
+
+## Deadlock & Resource Allocation Graph (RAG) 
+
+- Nodes:
+  - Resources (e.g. semaphores) denoted by squares
+  - Processes (e.g. task) denoted by circles
+
+![image-20230227145410929](assets/image-20230227145410929.png)
+
+- Nodes: 
+  - Resources (e.g. semaphores) denoted by squares
+  - Processes (e.g. task) denoted by circles
+- Directed Edges:
+  - From resource r_k to process p_m if resource r_k has been allocated to process p_m
+
+![image-20230227145536607](assets/image-20230227145536607.png)
+
+- Nodes:
+  - Resources (e.g. semaphores) denoted by squares
+  - Processes (e.g. task) denoted by circles
+- Directed Edges: 
+  - From resource r_k to process p_m if resource r_k has been allocated to process p_m
+  - From process p_i to resource r_j if process p_i has requested the resource r_j
+
+![image-20230227145937381](assets/image-20230227145937381.png)
+
+- Nodes: 
+  - Resources (e.g. semaphores) denoted by squares
+  - Processes (e.g. task) denoted by circles
+- Directed Edges:
+  - From resource r_k to process p_m if resource r_k has been allocated to process p_m
+  - From process p_i to resource r_j if process p_i has requested the resource r_j
+- States: 
+  - A graph depicts a state of the system
+  - RAG evolves as execution progresses
+
+![image-20230227150111077](assets/image-20230227150111077.png)
+
+- If there is a deadlock, then there is a cycle in the RAG. 
+- If there is a cycle, a deadlock may or may not be present.
+
+![image-20230227150152379](assets/image-20230227150152379.png)
+
+## Dealing with Deadlock
+
+- From **without** the program
+  - Is the group of threads deadlocked? And if so, how best to get it out of deadline?
+  - Could this move (i.e., locking some resource on behalf of a thread) lead to deadlock within the group of threads?
+- From **within** the program
+  - Restrict use of mutexes so that deadlock can’t happen
+
+## Conditional Locking
+
+```c
+thread1( ) {
+
+    /* use object 1 */ 
+    pthread_mutex_lock(&m1);
+	/* use objects 1 and 2 */ 
+    pthread_mutex_lock(&m2);
+
+    pthread_mutex_unlock(&m2); 
+    pthread_mutex_unlock(&m1);
+}
+```
+
+```c
+thread2( ) {
+
+    for (;;) { 
+        pthread_mutex_lock(&m2); 
+        if (pthread_mutex_trylock(&m1) == 0) { 
+            break;
+		} 
+        pthread_mutex_unlock(&m2);
+	}
+
+    /* use objects 1 and 2 */ 
+    pthread_mutex_unlock(&m1); 
+    pthread_mutex_unlock(&m2);
+}
+```
+
+## Beyond Mutexes
+
+- **There is more to synchronization than just using mutexes!**
+- Some problems require additional mechanisms
+  - Semaphores
+  - Condition variables
+  - Monitors
+- We’ll see some of these used in:
+  - Producer-Consumer problem (revisited) 
+  - **Readers**-**Writers** problem 
+  - **Barrier** problem
+
+## Concept: Guarded Commands
+
+```C
+when (guard) { 
+    /* 
+    * Once the guard is true, execute the 
+    * code between square brackets atomically. 
+    */
+	... 
+}
+```
+
+> Note: that the guard is simply an expression (and possibly a complex expression!) that evaluates to true or false
+
+## Semaphores
+
+## Mutexes via Semaphores
+
+## Recall: Producer-Consumer Problem
+
+## Recall: Producer-Consumer Problem
+
+## Producer-Consumer with Semaphores
+
+## Multiple producers/consumers
+
+## POSIX Semaphores
+
+# # TEXTBOOK NOTES START #
 
 # Chapter 1 (Introduction)
 
