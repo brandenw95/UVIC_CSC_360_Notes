@@ -2468,19 +2468,283 @@ when (guard) {
 
 ## Semaphores
 
+- P(S) operation 
+  - Remember, the keyword when causes our (theoretical) thread to wait until Boolean condition is true
+  - Operation is usually called wait()
+- V(S) operation
+  - Note empty guard (i.e., there does not exist a condition)...
+  - Operation is usually called signal()
+
+```C
+when (S > 0)[
+	S = S -1;
+]
+    
+    
+[S = S - 1;]
+```
+
+
+
 ## Mutexes via Semaphores
 
-## Recall: Producer-Consumer Problem
+![image-20230302143322648](assets/image-20230302143322648.png)
 
 ## Recall: Producer-Consumer Problem
+
+![image-20230302143333173](assets/image-20230302143333173.png)
+
+## Recall: Producer-Consumer Problem
+
+![image-20230302143345058](assets/image-20230302143345058.png)
 
 ## Producer-Consumer with Semaphores
 
+![image-20230302143356413](assets/image-20230302143356413.png)
+
 ## Multiple producers/consumers
+
+![image-20230302143410977](assets/image-20230302143410977.png)
 
 ## POSIX Semaphores
 
-# # TEXTBOOK NOTES START #
+```C
+#include <semaphore.h> 
+
+sem_t semaphore;
+
+sem_init(&semaphore, pshared, init_value); 
+/* If successful, sem_init returns 0. Otherwise it returns 
+* -1, and the error code is stored in errno. 
+*/
+
+sem_destroy(&semaphore); 
+sem_wait(&semaphore); /* P operation */
+sem_trywait(&semaphore); /* conditional P operation */ 
+sem_post(&semaphore);/* V operation */
+```
+
+# Lecture 18 (03-02-23)
+
+## Outline
+
+- Basic Concepts 
+- Scheduling Criteria
+- Scheduling Algorithms
+- Thread Scheduling 
+- Multiple-Processor Scheduling
+
+## Objectives
+
+- To introduce CPU scheduling, which is the basis for multitasking operating systems
+- To describe various CPU-scheduling algorithms 
+- To discuss evaluation criteria for selecting a CPU-scheduling algorithm for a particular system
+- To examine the scheduling algorithms of several operating systems
+
+## Background
+
+- Maximum CPU utilization obtained with multitasking
+- CPU–I/O Burst Cycle – Process execution consists of a **cycle** of CPU execution and I/O wait
+- **CPU burst** followed by **I/O burst** 
+- CPU burst distribution is of main concern
+
+![image-20230302143915812](assets/image-20230302143915812.png)
+
+## Histogram of CPU-burst Times
+
+![image-20230302143938246](assets/image-20230302143938246.png)
+
+## CPU Scheduler
+
+- **Short-term scheduler** selects from among the processes in ready queue, and allocates the CPU to one of them
+  - Queue may be ordered in various ways
+- CPU scheduling decisions may take place when a process: 
+  - Switches from running to waiting state 
+  - Switches from running to ready state 
+  - Switches from waiting to ready 
+  - Terminates
+- Scheduling under 1 and 4 is **non-preemptive**
+- All other scheduling is **preemptive**
+  - Consider access to shared data
+  - Consider preemption while in kernel mode
+  - Consider interrupts occurring during crucial OS activities
+
+## Dispatcher
+
+- Dispatcher module gives control of the CPU to the process selected task by the short-term scheduler; this involves:
+  - switching context
+  - switching to user mode
+  - jumping to the proper location in the user program to restart that program
+- **Dispatch latency** – time it takes for the dispatcher to stop one process and start another running
+
+## Scheduling Criteria
+
+- **CPU utilization** – keep the CPU as busy as possible
+- **Throughput** – # of processes that complete their execution per time unit
+- **Turnaround time** – amount of time to execute a particular process
+- **Waiting time** – amount of time a process has been waiting in the ready queue
+- **Response time** – amount of time it takes from when a request was submitted until the first response is produced, not output (for time-sharing environment)
+
+## Scheduling Algorithm Optimization Criteria
+
+- Max CPU utilization
+- Max throughput
+- Min turnaround time
+- Min waiting time
+- Min response time
+
+## First- Come, First-Served (FCFS) Scheduling
+
+| Process | Burst Time |
+| ------- | ---------- |
+| P_1     | 24         |
+| P_2     | 3          |
+| P_3     | 3          |
+
+- Suppose that the processes arrive in the order: P1 , P2 , P3 The Gantt Chart for the schedule is:
+
+![image-20230302144554640](assets/image-20230302144554640.png)
+
+- Waiting time for P1 = 0; P2 = 24; P3 = 27
+- Average waiting time: (0 + 24 + 27)/3 = 17
+
+## FCFS Scheduling (Cont.)
+
+Suppose that the processes arrive in the order:
+
+> P2 , P3 , P1
+
+![image-20230302144638699](assets/image-20230302144638699.png)
+
+- Waiting time for P1 = 6; P2 = 0; P3 = 3
+- Average waiting time: (6 + 0 + 3)/3 = 3
+- Much better than previous case
+- **Convoy effect** - short process behind long process
+  - Consider one CPU-bound and many I/O-bound processes
+
+## Shortest-Job-First (SJF) Scheduling
+
+- Associate with each process the length of its next CPU burst
+  - Use these lengths to schedule the process with the shortest time
+- SJF is optimal – gives minimum average waiting time for a given set of processes 
+  - The difficulty is knowing the length of the next CPU request
+  - Could ask the user
+
+## Example of SJF
+
+| Process | Burst Time |
+| ------- | ---------- |
+| P1      | 6          |
+| P2      | 8          |
+| P3      | 7          |
+| P4      | 3          |
+
+- SJF scheduling chart:
+
+![image-20230302144919603](assets/image-20230302144919603.png)
+
+- Average waiting time = (3 + 16 + 9 + 0) / 4 = 7
+
+## Determining Length of Next CPU Burst
+
+- Can only estimate the length – should be similar to the previous one
+- Then pick process with shortest predicted next CPU burst
+
+
+
+- Can be done by using the length of previous CPU bursts, using exponential averaging
+
+![image-20230302145023059](assets/image-20230302145023059.png)
+
+- Commonly, α set to ½
+- Preemptive version called **shortest-remaining-time-first**
+
+## Prediction of the Length of the Next CPU Burst
+
+![image-20230302145049738](assets/image-20230302145049738.png)
+
+## Examples of Exponential Averaging
+
+![image-20230302145106607](assets/image-20230302145106607.png)
+
+## Example of Shortest-remaining-time-first
+
+- Now we add the concepts of varying arrival times and preemption to the analysis
+
+| Process | Arrival Time | Burst Time |
+| ------- | ------------ | ---------- |
+| P1      | 0            | 8          |
+| P2      | 1            | 4          |
+| P3      | 2            | 9          |
+| P4      | 3            | 5          |
+
+- Preemptive SJF Gantt Chart
+
+![image-20230302145211681](assets/image-20230302145211681.png)
+
+- Average waiting time = [(10-1)+(1-1)+(17-2)+5-3)]/4 = 26/4 = 6.5 msec
+
+## Priority Scheduling
+
+- A priority number (integer) is associated with each process
+- The CPU is allocated to the process with the highest priority (smallest integer
+  - highest priority)
+  - Preemptive
+  - Nonpreemptive
+- SJF is priority scheduling where priority is the inverse of predicted next CPU burst time
+- Problem
+  - **Starvation** – low priority processes may never execute
+- Solution
+  - **Aging** – as time progresses increase the priority of the process
+
+## Example of Priority Scheduling
+
+| Process | Burst Time | Priority |
+| ------- | ---------- | -------- |
+| P1      | 10         | 3        |
+| P2      | 1          | 1        |
+| P3      | 2          | 4        |
+| P4      | 1          | 5        |
+| P5      | 5          | 2        |
+
+- Priority scheduling Gantt Chart
+
+![image-20230302145453621](assets/image-20230302145453621.png)
+
+- Average waiting time = 8.2 msec
+
+## Round Robin (RR)
+
+- Each process gets a small unit of CPU time (**time quantum** q), usually 10-100 milliseconds. After this time has elapsed, the process is preempted and added to the end of the ready queue.
+- If there are n processes in the ready queue and the time quantum is q, then each process gets 1/n of the CPU time in chunks of at most q time units at once. No process waits more than (n-1)q time units.
+- Timer interrupts every quantum to schedule next process
+- Performance 
+  - q large -> FIFO
+  -  q small -> q must be large with respect to context switch, otherwise overhead is too high
+
+## Example of RR with Time Quantum = 4
+
+| Process | Burst Time |
+| ------- | ---------- |
+| P1      | 24         |
+| P2      | 3          |
+| P3      | 3          |
+
+- The Gantt chart is:
+
+![image-20230302145642101](assets/image-20230302145642101.png)
+
+- Typically, higher average turnaround than SJF, but better **response**
+- q should be large compared to context switch time
+- q usually 10ms to 100ms, context switch < 10 usec
+
+# Lecture 19 (03-06-23)
+
+
+
+# # TEXTBOOK  #
+
+# NOTES START #
 
 # Chapter 1 (Introduction)
 
