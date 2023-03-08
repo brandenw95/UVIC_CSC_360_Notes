@@ -2904,9 +2904,25 @@ Suppose that the processes arrive in the order:
 
 ## Time Quantum and Context Switch Time
 
+![image-20230308150608233](assets/image-20230308150608233.png)
+
 ## Turnaround Time Varies With The Time Quantum
 
+![image-20230308150621769](assets/image-20230308150621769.png)
+
 ## Multilevel Queue
+
+- Ready queue is partitioned into separate queues, eg:
+  - **Foreground (interactive)** 
+  - **Background (batch)**
+- Process permanently in a given queue
+- Each queue has its own scheduling algorithm: 
+  - Foreground – RR 
+  - Background – FCFS
+- Scheduling must be done between the queues:
+  - Fixed priority scheduling; (i.e., serve all from foreground then from background). Possibility of starvation.
+  - Time slice – each queue gets a certain amount of CPU time which it can schedule amongst its processes; i.e., 80% to foreground in RR
+  - 20% to background in FCFS
 
 # Lecture 20 (03-08-23)
 
