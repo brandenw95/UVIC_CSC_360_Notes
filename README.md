@@ -2902,6 +2902,390 @@ Suppose that the processes arrive in the order:
 
 # Lecture 19 (03-06-23)
 
+## Time Quantum and Context Switch Time
+
+## Turnaround Time Varies With The Time Quantum
+
+## Multilevel Queue
+
+# Lecture 20 (03-08-23)
+
+## Example Code for scope switching
+
+```c
+/*
+ * thread_SCOPE.c
+ *
+ * Created: 2023-03-07 9:24:29 pM
+ * Author : Ahmad Abdullah
+ *
+ * Usage  : ./thread_scope
+ * Purpose: 
+ * Note   : This code is to provide an example for pthread scope.
+ *					To comile use: gcc thread_scope.c -o thread_scope -lpthread
+ */ 
+#include <pthread.h>
+#include <stdio.h>
+#define NUM_THREADS 5
+
+/* Each thread will begin control in this function */
+void *runner(void *param){
+   int i = *(int *) param;
+   
+   /* do some work ... */
+   printf("Thread [%d]\n", i);
+   
+   pthread_exit(0);
+}
+
+int main(int argc, char *argv[]) {
+   int i, scope;   pthread_t tid[NUM_THREADS];
+   pthread_attr_t attr;
+   /* get the default attributes */
+   pthread_attr_init(&attr);
+   /* first inquire on the current scope */   
+   if (pthread_attr_getscope(&attr, &scope) != 0)
+      fprintf(stderr, "Unable to get scheduling scope\n");
+   else {
+      if (scope == PTHREAD_SCOPE_PROCESS)
+         printf("PTHREAD_SCOPE_PROCESS\n");
+      else if (scope == PTHREAD_SCOPE_SYSTEM)
+         printf("PTHREAD_SCOPE_SYSTEM\n");
+      else         
+         fprintf(stderr, "Illegal scope value.\n");
+   }
+   /* set the scheduling algorithm to PCS or SCS */
+   pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+   
+   /* create the threads */   
+   for (i = 0; i < NUM_THREADS; i++)
+      pthread_create(&tid[i],&attr,runner, (void*) &i);
+   
+   /* now join on each thread */   
+   for (i = 0; i < NUM_THREADS; i++)
+      pthread_join(tid[i], NULL);
+}
+```
+
+## Multilevel Queue Scheduling
+
+![image-20230308143301309](assets/image-20230308143301309.png)
+
+## Multilevel Feedback Queue
+
+- A process can move between the various queues; aging can be implemented this way
+- Multilevel-feedback-queue scheduler defined by the following parameters:
+  - number of queues
+  - scheduling algorithms for each queue
+  - method used to determine when to upgrade a process
+  - method used to determine when to demote a process
+  - method used to determine which queue a process will enter when that process needs service
+
+## Example of Multilevel Feedback Queue
+
+- Three queues: 
+  - Q0 – RR with time quantum 8 milliseconds 
+  - Q1 – RR time quantum 16 milliseconds
+  - Q2 – FCFS
+
+![image-20230308143413318](assets/image-20230308143413318.png)
+
+- Scheduling
+  - A new job enters queue Q0 which is served RR
+    - When it gains CPU, job receives 8 milliseconds 
+    - If it does not finish in 8 milliseconds, job is moved to queue Q1
+  - At Q1 job is again served RR and receives 16 additional milliseconds 
+    - If it still does not complete, it is preempted and moved to queue Q2
+
+## Thread Scheduling
+
+- Distinction between user-level and kernel-level threads
+- When threads supported, threads scheduled, not processes
+- Many-to-one and many-to-many models, thread library schedules user-level threads to run on LWP
+  - Known **as process-contention scope (PCS)** since scheduling competition is within the process
+  - Typically done via priority set by programmer
+- Kernel thread scheduled onto available CPU is **system-contention scope (SCS)**
+  - competition among all threads in system
+
+## Pthread Scheduling
+
+- API allows specifying either PCS or SCS during thread creation
+  -  PTHREAD_SCOPE_PROCESS schedules threads using PCS scheduling 
+  - PTHREAD_SCOPE_SYSTEM schedules threads using SCS scheduling
+- Can be limited by OS – Linux and Mac OS X only allow PTHREAD_SCOPE_SYSTEM
+
+## Pthread Scheduling API
+
+```c
+#include <pthread.h> 
+#include <stdio.h> 
+
+#define NUM_THREADS 5 
+
+int main(int argc, char *argv[]) { 
+    int i, scope; 
+    pthread_t tid[NUM THREADS]; 
+    pthread_attr_t attr; /* get the default attributes */ 
+    pthread_attr_init(&attr); /* first inquire on the current scope */ 
+    if (pthread_attr_getscope(&attr, &scope) != 0) 
+        fprintf(stderr, "Unable to get scheduling scope\n");
+
+    else { 
+        if (scope == PTHREAD_SCOPE_PROCESS) 
+            printf("PTHREAD_SCOPE_PROCESS");
+
+        else if (scope == PTHREAD_SCOPE_SYSTEM) 
+            printf("PTHREAD_SCOPE_SYSTEM");
+
+        else fprintf(stderr, "Illegal scope value.\n"); 
+    }
+	/* set the scheduling algorithm to PCS or SCS */ 
+    pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM); /* create the threads */ 
+    for (i = 0; i < NUM_THREADS; i++) 
+        pthread_create(&tid[i],&attr,runner,NULL); /* now join on each thread */ 
+    for (i = 0; i < NUM_THREADS; i++) 
+        pthread_join(tid[i], NULL);
+}
+
+/* Each thread will begin control in this function */ 
+void *runner(void *param){ /* do some work ... */ 	
+    pthread_exit(0);
+    
+}
+```
+
+## Multiple-Processor Scheduling
+
+- CPU scheduling more complex when multiple CPUs are available 
+- **Homogeneous processors** within a multiprocessor
+- **Asymmetric multiprocessing** – only one processor accesses the system data structures, alleviating the need for data sharing
+- **Symmetric multiprocessing (SMP)** – each processor is self-scheduling, all processes in common ready queue, or each has its own private queue of ready processes
+  - Currently, most common
+- **Processor affinity** – process has affinity for processor on which it is currently running
+  - **Soft affinity** 
+  - **Hard affinity**
+  - Variations including **processor sets**
+
+## NUMA and CPU Scheduling
+
+![image-20230308144157247](assets/image-20230308144157247.png)
+
+> **Note:** 
+>
+> that memory-placement algorithms can also consider affinity
+
+## Multiple-Processor Scheduling – Load Balancing
+
+- If SMP, need to keep all CPUs loaded for efficiency
+- **Load balancing** attempts to keep workload evenly distributed
+- **Push migration** – periodic task checks load on each processor, and if found pushes task from overloaded CPU to other CPUs
+- **Pull migration** – idle processors pulls waiting task from busy processor
+
+## Multicore Processors
+
+- Recent trend to place multiple processor cores on same physical chip
+-  Faster and consumes less power
+- Multiple threads per core also growing 
+  - Takes advantage of memory stall to make progress on another thread while memory retrieve happens
+
+## Multithreaded Multicore System
+
+![image-20230308144843397](assets/image-20230308144843397.png)
+
+## Scheduling Example
+
+- For the following task graph (Ji, e):
+- ![image-20230308144939121](assets/image-20230308144939121.png)
+- All tasks (except J5) are released at t=0. J5 is released at t=4. 
+- Jobs are scheduled on two processors: P1 and P2 
+- The lower the job number the higher the priority. 
+- Solve for both, preemptive and non-preemptive scheduling.
+
+## Solving for Pre-emptive Scheduling
+
+![image-20230308144956850](assets/image-20230308144956850.png)
+
+## Solving for Non-preemptive Scheduling
+
+![image-20230308145011849](assets/image-20230308145011849.png)
+
+## Pre-emptive vs. non-preemptive
+
+![image-20230308145026174](assets/image-20230308145026174.png)
+
+## Real-Time CPU Scheduling
+
+- Can present obvious challenges
+- **Soft real-time systems** – no guarantee as to when critical real-time process will be scheduled
+- **Hard real-time systems** – task must be serviced by its deadline
+- Two types of latencies affect performance 
+  - Interrupt latency – time from arrival of interrupt to start of routine that services interrupt
+  - Dispatch latency – time for schedule to take current process off CPU and switch to another
+
+![image-20230308145302408](assets/image-20230308145302408.png)
+
+## Real-Time CPU Scheduling (Cont.)
+
+- Conflict phase of dispatch latency: 
+  - Preemption of any process running in kernel mode
+  - Release by low-priority process of resources needed by high-priority processes
+
+![image-20230308145340079](assets/image-20230308145340079.png)
+
+## Priority-based Scheduling
+
+- For real-time scheduling, scheduler must support preemptive, priority-based scheduling
+  - But only guarantees soft real-time
+- For hard real-time must also provide ability to meet deadlines
+- Processes have new characteristics: **periodic** ones require CPU at constant intervals 
+  - Has processing time t, deadline d, period p 
+  - 0 ≤ t ≤ d ≤ p 
+  - **Rate** of periodic task is 1/p
+
+![image-20230308145448685](assets/image-20230308145448685.png)
+
+## Virtualization and Scheduling
+
+- Virtualization software schedules multiple guests onto CPU(s)
+- Each guest doing its own scheduling
+  - Not knowing if it doesn’t own the CPUs
+  - Can result in poor response time
+  - Can affect time-of-day clocks in guests
+- Can undo good scheduling algorithm efforts of guests
+
+## Rate Montonic Scheduling
+
+- A priority is assigned based on the inverse of its period
+- Shorter periods = higher priority
+- Longer periods = lower priority
+- P1 is assigned a higher priority than P2
+
+![image-20230308145553280](assets/image-20230308145553280.png)
+
+## Missed Deadlines with Rate Monotonic Scheduling
+
+![image-20230308145607024](assets/image-20230308145607024.png)
+
+## Earliest Deadline First Scheduling (EDF)
+
+- Priorities are assigned according to deadlines:
+
+the earlier the deadline, the higher the priority; the later the deadline, the lower the priority
+
+![image-20230308145646016](assets/image-20230308145646016.png)
+
+## Proportional Share Scheduling
+
+- T shares are allocated among all processes in the system
+- An application receives N shares where N < T
+- This ensures each application will receive N / Tof the total processor time
+
+## POSIX Real-Time Scheduling
+
+- The POSIX.1b standard
+- API provides functions for managing real-time threads
+- Defines two scheduling classes for real-time threads:
+  - SCHED_FIFO - threads are scheduled using a FCFS strategy with a FIFO queue. There is no time-slicing for threads of equal priority
+  - SCHED_RR - similar to SCHED_FIFO except time-slicing occurs for threads of equal priority
+- Defines two functions for getting and setting scheduling policy: 
+  - pthread_attr_getsched_policy(pthread_attr_t *attr, int *policy) 
+  - pthread_attr_setsched_policy(pthread_attr_t *attr, int policy)
+
+## POSIX Real-Time Scheduling API
+
+```c
+#include <pthread.h> 
+#include <stdio.h> 
+#define NUM_THREADS 5 
+int main(int argc, char *argv[]) {
+
+    int i, policy; 
+    pthread_t_tid[NUM_THREADS]; 
+    pthread_attr_t attr; /* get the default attributes */ 
+    pthread_attr_init(&attr); /* get the current scheduling policy */ 
+    if (pthread_attr_getschedpolicy(&attr, &policy) != 0) 
+        fprintf(stderr, "Unable to get policy.\n");
+
+    else { 
+        if (policy == SCHED_OTHER) 
+            printf("SCHED_OTHER\n");
+        else if (policy == SCHED_RR) 
+            printf("SCHED_RR\n"); 
+        else if (policy == SCHED_FIFO) 
+            printf("SCHED_FIFO\n");
+}
+    
+
+    /* set the scheduling policy - FIFO, RR, or OTHER */ 
+    if (pthread_attr_setschedpolicy(&attr, SCHED_FIFO) != 0) 
+        fprintf(stderr, "Unable to set policy.\n");
+
+    /* create the threads */ 
+    for (i = 0; i < NUM_THREADS; i++) 
+        pthread_create(&tid[i],&attr,runner,NULL); 
+    /* now join on each thread */
+
+    for (i = 0; i < NUM_THREADS; i++) pthread_join(tid[i], NULL);
+
+}
+
+/* Each thread will begin control in this function */ 
+void *runner(void *param){ 
+    /* do some work ... */ 
+    pthread_exit(0);
+}
+```
+
+## Scheduling Algorithm Evaluation
+
+- How to select CPU-scheduling algorithm for an OS?
+- Determine criteria, then evaluate algorithms
+- Deterministic modeling
+  - Type of analytic evaluation
+  - Takes a particular predetermined workload and defines the performance of each algorithm for that workload
+
+- Consider 5 processes arriving at time 0:
+
+| Process | Burst Time |
+| ------- | ---------- |
+| P1      | 10         |
+| P2      | 29         |
+| P3      | 3          |
+| P4      | 7          |
+| P5      | 12         |
+
+## Deterministic Evaluation
+
+- For each algorithm, calculate minimum average waiting time 
+- Simple and fast, but requires exact numbers for input, applies only to those inputs
+  - FCS is 28ms:
+  - ![image-20230308150221624](assets/image-20230308150221624.png)
+  - Non-preemptive SFJ is 13ms:
+  - ![image-20230308150239934](assets/image-20230308150239934.png)
+  - RR is 23ms
+  - ![image-20230308150254607](assets/image-20230308150254607.png)
+
+## Queueing Models
+
+- Describes the arrival of processes, and CPU and I/O bursts probabilistically
+  - Commonly exponential, and described by mean
+  - Computes average throughput, utilization, waiting time, etc
+- Computer system described as network of servers, each with queue of waiting processes
+  - Knowing arrival rates and service rates
+  - Computes utilization, average queue length, average wait time, etc
+
+## Little’s Formula
+
+- n = average queue length
+- W= average waiting time in queue
+- λ = average arrival rate into queue
+- Little’s law – in steady state, processes leaving queue must equal processes arriving, thus: 
+  - **n = λ x W**
+  - Valid for any scheduling algorithm and arrival distribution
+- For example, if on average 7 processes arrive per second, and normally 14 processes in queue, then average wait time per process = 2 seconds
+
+# Lecture 21 (03-09-23)
+
 
 
 # # TEXTBOOK  #
