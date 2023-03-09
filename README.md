@@ -3097,10 +3097,12 @@ void *runner(void *param){ /* do some work ... */
 - **Push migration** – periodic task checks load on each processor, and if found pushes task from overloaded CPU to other CPUs
 - **Pull migration** – idle processors pulls waiting task from busy processor
 
+# Lecture 21 (03-09-23)
+
 ## Multicore Processors
 
 - Recent trend to place multiple processor cores on same physical chip
--  Faster and consumes less power
+- Faster and consumes less power
 - Multiple threads per core also growing 
   - Takes advantage of memory stall to make progress on another thread while memory retrieve happens
 
@@ -3299,10 +3301,6 @@ void *runner(void *param){
   - **n = λ x W**
   - Valid for any scheduling algorithm and arrival distribution
 - For example, if on average 7 processes arrive per second, and normally 14 processes in queue, then average wait time per process = 2 seconds
-
-# Lecture 21 (03-09-23)
-
-
 
 # # TEXTBOOK  #
 
