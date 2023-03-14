@@ -3302,6 +3302,10 @@ void *runner(void *param){
   - Valid for any scheduling algorithm and arrival distribution
 - For example, if on average 7 processes arrive per second, and normally 14 processes in queue, then average wait time per process = 2 seconds
 
+
+
+
+
 # # TEXTBOOK  #
 
 # NOTES START #
