@@ -3468,6 +3468,10 @@ void *runner(void *param){
 
 ![image-20230315145418933](assets/image-20230315145418933.png)
 
+
+
+# Lecture 24 (03-17-23)
+
 ## Multiple-partition allocation
 
 - Multiple-partition allocation 
@@ -3591,10 +3595,6 @@ First-fit and best-fit better than worst-fit in terms of speed and storage utili
 ## Paging Model of Logical and Physical Memory
 
 ![image-20230315150706674](assets/image-20230315150706674.png)
-
-
-
-# Lecture 24 (03-17-23)
 
 
 
