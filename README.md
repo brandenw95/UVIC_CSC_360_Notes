@@ -3703,7 +3703,7 @@ First-fit and best-fit better than worst-fit in terms of speed and storage utili
 >
 > no read after last write
 >
-> (Rewrite)
+> - (Rewrite)
 
 - Direct Access - file is fixed length logical records
 
