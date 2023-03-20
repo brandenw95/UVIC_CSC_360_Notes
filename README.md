@@ -3596,7 +3596,184 @@ First-fit and best-fit better than worst-fit in terms of speed and storage utili
 
 ![image-20230315150706674](assets/image-20230315150706674.png)
 
+# Lecture 25 (03-20-23)
 
+## Objectives (File system Interface)
+
+- File Concept
+- Access Methods
+- Disk and Directory Structure
+- File-System Mounting
+- File Sharing
+- Protection
+- To explain the function of file systems
+- To describe the interfaces to file systems
+- To discuss file-system design tradeoffs, including access methods, file sharing, file locking, and directory structures
+- To explore file-system protection
+
+## File Concept
+
+- Contiguous logical address space
+- Types:
+  - Data file
+    - numeric
+    - character
+    - binary
+  - Program file
+- Contents defined by file’s creator
+  - Many types 
+    - Consider **text file, source file, executable file**
+
+## File Attributes
+
+- **Name** – only information kept in human-readable form
+- **Identifier** – unique tag (number) identifies file within file system
+- **Type** – needed for systems that support different types
+- **Location** – pointer to file location on device
+- **Size** – current file size
+- **Protection** – controls who can do reading, writing, executing
+- **Time, date, and user identification** – data for protection, security, and usage monitoring
+- Information about files are kept in the directory structure, which is maintained on the disk
+- Many variations, including extended file attributes such as file checksum 
+- Information kept in the directory structure
+
+## File Operations
+
+- File is an **abstract data type**
+- **Create** 
+- **Write** – at write pointer location
+- **Read** – at read pointer location
+- **Reposition within file** - seek
+- **Delete**
+- Truncate
+- *Open(Fi)* – search the directory structure on disk for entry Fi, and move the content of entry to memory
+- *Close (Fi)* – move the content of entry Fi in memory to directory structure on disk
+
+## Open Files
+
+- Several pieces of data are needed to manage open files:
+  - **Open-file table:** tracks open files
+  - File pointer: pointer to last read/write location, per process that has the file open
+  - **File-open count:** counter of number of times a file is open – to allow removal of data from open-file table when last processes closes it
+  - Disk location of the file: cache of data access information
+  - Access rights: per-process access mode information
+
+## Open File Locking
+
+- Provided by some operating systems and file systems
+  - Similar to reader-writer locks
+  - **Shared lock** similar to reader lock – several processes can acquire concurrently
+  - **Exclusive lock** similar to writer lock
+- Mediates access to a file
+- Mandatory or advisory:
+  - **Mandatory** – access is denied depending on locks held and requested 
+  - **Advisory** – processes can find status of locks and decide what to do
+
+## File Types – Name, Extension
+
+![image-20230320144909287](assets/image-20230320144909287.png)
+
+## File Structure
+
+- None - sequence of words, bytes
+- Simple record structure 
+  - Lines 
+  - Fixed length
+  - Variable length
+- Complex Structures 
+  - Formatted document
+  - Relocatable load file
+- Who decides: 
+  - Operating system
+  - Program
+
+## Sequential-access File
+
+![image-20230320145008419](assets/image-20230320145008419.png)
+
+## Access Methods
+
+- Sequential Access
+
+> Read next
+>
+> write next
+>
+> reset
+>
+> no read after last write
+>
+> (Rewrite)
+
+- Direct Access - file is fixed length logical records
+
+> Read n 
+>
+> write n
+>
+> position to n
+>
+> - read next
+> - write next
+>
+> rewrite n
+
+**n = relative block number**
+
+- Relative block numbers allow OS to decide where file should be placed 
+  - See allocation problem in Ch 12
+
+## Simulation of Sequential Access on Direct-access File
+
+![image-20230320145228169](assets/image-20230320145228169.png)
+
+## Other Access Methods
+
+- Can be built on top of base methods
+- General involve creation of an **index** for the file
+- Keep index in memory for fast determination of location of data to be operated on (consider UPC code plus record of data about that item)
+- If too large, index (in memory) of the index (on disk)
+- IBM indexed sequential-access method (ISAM)
+  - Small master index, points to disk blocks of secondary index 
+  - File kept sorted on a defined key 
+  - All done by the OS
+- VMS operating system provides index and relative files as another example (see next slide)
+
+## Example of Index and Relative Files
+
+![image-20230320145331565](assets/image-20230320145331565.png)
+
+## Directory Structure
+
+- A collection of nodes containing information about all files
+
+![image-20230320145358609](assets/image-20230320145358609.png)
+
+## Disk Structure
+
+- Disk can be subdivided into **partitions**
+- Disks or partitions can be **RAID** protected against failure
+- Disk or partition can be used **raw** – without a file system, or **formatted** with a file system
+- Partitions also known as minidisks, slices
+- Entity containing file system known as a **volume**
+- Each volume containing file system also tracks that file system’s info in **device directory** or **volume table of contents**
+- As well as **general-purpose file systems** there are many **special-purpose file systems**, frequently all within the same operating system or computer
+
+## A Typical File-system Organization
+
+![image-20230320145518254](assets/image-20230320145518254.png)
+
+## Types of File Systems
+
+- We mostly talk of general-purpose file systems
+- But systems frequently have may file systems, some general- and some special purpose
+- Consider Solaris has
+  - tmpfs – memory-based volatile FS for fast, temporary I/O 
+  - objfs – interface into kernel memory to get kernel symbols for debugging 
+  - ctfs – contract file system for managing daemons
+  - lofs – loopback file system allows one FS to be accessed in place of another
+  - procfs – kernel interface to process structures
+  - ufs, zfs – general purpose file systems
 
 # # TEXTBOOK  #
 
