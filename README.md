@@ -3775,7 +3775,306 @@ First-fit and best-fit better than worst-fit in terms of speed and storage utili
   - procfs – kernel interface to process structures
   - ufs, zfs – general purpose file systems
 
-# # TEXTBOOK  #
+# Lecture 26 (03-22-23)
+
+## Operations Performed on Directory
+
+- Search for a file
+- Create a file
+- Delete a file
+- List a directory
+- Rename a file
+- Traverse the file system
+
+## Directory Organization
+
+The directory is organized logically to obtain:
+
+- Efficiency – locating a file quickly
+- Naming – convenient to users
+  - Two users can have same name for different files
+  - The same file can have several different names
+- Grouping – logical grouping of files by properties, (e.g., all Java programs, all games, …)
+
+## Single-Level Directory
+
+- A single directory for all users
+
+![image-20230327133934135](assets/image-20230327133934135.png)
+
+- Naming problem
+- Grouping problem
+
+## Two-Level Directory
+
+- Separate directory for each user
+
+![image-20230327133953473](assets/image-20230327133953473.png)
+
+- Path name
+- Can have the same file name for different user
+- Efficient searching
+- No grouping capability
+
+## Tree-Structured Directories
+
+- Efficient searching
+- Grouping Capability
+- Current directory (working directory)
+  - cd /spell/mail/prog
+  - type list
+
+![image-20230327134010446](assets/image-20230327134010446.png)
+
+## Tree-Structured Directories (Cont.)
+
+- **Absolute** or **relative** path name
+- Creating a new file is done in current directory
+- Delete a file
+
+```shell
+rm <file-name>
+```
+
+- Creating a new subdirectory is done in current directory:
+
+```shell
+mkdir <dir-name>
+```
+
+> Example:
+>
+> if in current directory /mail
+>
+> ```shell
+> mkdir count
+> ```
+>
+> ![image-20230327134209153](assets/image-20230327134209153.png)
+
+> Note: Deleting “mail” -> deleting the entire subtree rooted by “mail”
+
+## Acyclic-Graph Directories
+
+- Have shared subdirectories and files
+
+![image-20230327134247728](assets/image-20230327134247728.png)
+
+## Acyclic-Graph Directories (Cont.)
+
+- Two different names (aliasing)
+- If **dict** deletes **list** -> dangling pointer
+- <u>**Solutions:**</u>
+  - Back pointers, so we can delete all pointers
+    Variable size records a problem
+  - Back pointers using a daisy chain organization
+  - Entry-hold-count solution
+
+- New directory entry type
+  - **Link** – another name (pointer) to an existing file
+  - **Resolve the link** – follow pointer to locate the file
+
+## General Graph Directory
+
+![image-20230327134355060](assets/image-20230327134355060.png)
+
+## General Graph Directory (Cont.)
+
+- How do we guarantee no cycles?
+  - Allow only links to file not subdirectories
+  - **Garbage collection**
+  - Every time a new link is added use a cycle detection algorithm to determine whether it is OK
+
+
+## File System Mounting
+
+- A file system must be **mounted** before it can be accessed
+
+| Existing File System                                         | Unmounted Volume                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![image-20230327134519527](assets/image-20230327134519527.png) | ![image-20230327134529232](assets/image-20230327134529232.png) |
+
+## Mount Point
+
+![image-20230327134541110](assets/image-20230327134541110.png)
+
+## File Sharing
+
+- Sharing of files on multi-user systems is desirable
+- Sharing may be done through a **protection** scheme
+- On distributed systems, files may be shared across a network
+- Network File System (NFS) is a common distributed file-sharing method
+
+- If multi-user system
+  - **User** **IDs** identify users, allowing permissions and protections to be per-user
+  - **Group** **IDs** allow users to be in groups, permitting group access rights
+  - Owner of a file / directory
+  - Group of a file / directory
+
+## File Sharing – Remote File Systems
+
+- Uses networking to allow file system access between systems
+  - Manually via programs like FTP
+  - Automatically, seamlessly using **distributed file systems**
+  - Semi-automatically via the **world wide web**
+
+- **Client-server** model allows clients to mount remote file systems from servers
+  - Server can serve multiple clients
+  - Client and user-on-client identification is insecure or complicated
+  - **NFS** is standard UNIX client-server file sharing protocol
+  - **CIFS** is standard Windows protocol
+  - Standard operating system file calls are translated into remote calls
+
+- Distributed Information Systems (**distributed naming services**) such as LDAP, DNS, NIS, Active Directory implement unified access to information needed for remote computing
+
+## File Sharing – Failure Modes
+
+- All file systems have failure modes
+  - For example, corruption of directory structures or other non-user data, called **metadata**
+
+- Remote file systems add new failure modes, due to network failure, server failure
+
+- Recovery from failure can involve **state information** about the status of each remote request
+
+- **Stateless** protocols such as NFS v3 include all information in each request, allowing easy recovery but less security
+
+## File Sharing – Consistency Semantics
+
+- Specify how multiple users are to access a shared file simultaneously
+  - Similar to process synchronization algorithms
+
+- Tend to be less complex due to disk I/O and network latency (for remote file systems)
+  - Andrew File System (AFS) implemented complex remote file sharing semantics
+  - Unix file system (UFS) implements:
+    - Writes to an open file visible immediately to other users of the same open file
+    - Sharing file pointer to allow multiple users to read and write concurrently
+
+- AFS has session semantics
+  - Writes only visible to sessions starting after the file is closed
+
+## Protection
+
+- File owner/creator should be able to control:
+  - What can be done
+  - By whom
+
+- Types of access
+  - **Read**
+  - **Write**
+  - **Execute**
+  - **Append**
+  - **Delete**
+  - **List**
+
+## Access Lists and Groups
+
+- Mode of access: read, write, execute
+- Three classes of users on Unix / Linux:
+
+![image-20230327135210636](assets/image-20230327135210636.png)
+
+- Ask manager to create a group (unique name), say G, and add some users to the group
+- For a particular file (say game) or subdirectory, define an appropriate access
+
+![image-20230327135231931](assets/image-20230327135231931.png)
+
+- Attach a group to a file: `chgrp G game`
+
+## Windows Access-Control List Management
+
+![image-20230327135313009](assets/image-20230327135313009.png)
+
+## A Sample UNIX Directory Listing
+
+![image-20230327135323964](assets/image-20230327135323964.png)
+
+# Lecture 27 (03-27-23)
+
+## Outline
+
+- File-System Structure
+- File-System Operations
+- Virtual File Systems
+- Directory Implementation
+- Allocation Methods
+
+## File-System Structure
+
+- File structure
+  - Logical storage unit
+  - Collection of related information
+
+- **File system** resides on secondary storage (disks)
+  - Provides user interface to storage, mapping logical to physical
+  - Provides efficient and convenient access to disk by allowing data to be stored, located, and retrieved easily
+
+- Disk provides in-place rewrite and random access
+  - I/O transfers performed in **blocks** of **sectors** (usually 512 bytes)
+
+- **File control block** – storage structure consisting of information about a file
+
+- **Device driver** controls the physical device
+
+- File system organized into layers
+
+## Layered File System
+
+![image-20230327135837641](assets/image-20230327135837641.png)
+
+## File System Layers
+
+- **Device drivers** manage I/O devices at the I/O control layer
+  - Given commands like “read drive1, cylinder 72, track 2, sector 10, into memory location 1060” outputs low-level hardware specific commands to hardware controller
+
+- **Basic file system** given command like “retrieve block 123” translates to device driver
+
+- Also manages memory buffers and caches (allocation, freeing, replacement)
+  - Buffers hold data in transit
+  - Caches hold frequently used data
+
+- **File organization module** understands files, logical address, and physical blocks
+  - Translates logical block # to physical block #
+  - Manages free space, disk allocation
+
+## File System Layers (Cont.)
+
+- **Logical file system** manages metadata information
+  - Translates file name into file number, file handle, location by maintaining file control blocks (inodes in UNIX)
+  - Directory management
+  - Protection
+
+- Layering useful for reducing complexity and redundancy, but adds overhead and can decrease performance. Translates file name into file number, file handle, location by maintaining file control blocks (inodes in UNIX)
+  - Logical layers can be implemented by any coding method according to OS designer
+
+## File System Layers (Cont.)
+
+- Many file systems, sometimes many within an operating system
+  - Each with its own format (CD-ROM is ISO 9660; Unix has **UFS**, FFS; Windows has FAT, FAT32, NTFS as well as floppy, CD, DVD Blu-ray, Linux has more than 40 types, **with extended file system** ext2 and ext3 leading; plus distributed file systems, etc.)
+  - New ones still arriving – ZFS, GoogleFS, Oracle ASM, FUSE
+
+## File-System Implementation
+
+- We have system calls at the API level, but how do we implement their functions?
+  - On-disk and in-memory structures
+
+- **Boot control block** contains info needed by system to boot OS from that volume
+  - Needed if volume contains OS, usually first block of volume
+
+- **Volume control block (superblock, master file table)** contains volume details
+  - Total # of blocks, # of free blocks, block size, free block pointers or array
+
+- Directory structure organizes the files
+  - Names and inode numbers, master file table
+
+## File-System Implementation (Cont.)
+
+- Per-file **File Control Block (FCB)** contains many details about the file
+  - inode number, permissions, size, dates
+  - NFTS stores into in master file table using relational DB structures
+
+![image-20230327140024982](assets/image-20230327140024982.png)
+
+# // TEXTBOOK  #
 
 # NOTES START #
 
