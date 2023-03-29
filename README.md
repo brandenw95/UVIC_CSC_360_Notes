@@ -4164,6 +4164,8 @@ Block to be accessed = Q + starting address Displacement into block = R
   - Block to be accessed is the Qth block in the linked chain of blocks representing the file.
   - Displacement into block = R + 1
 
+
+
 # // TEXTBOOK  #
 
 # NOTES START #
