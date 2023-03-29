@@ -4074,6 +4074,96 @@ mkdir <dir-name>
 
 ![image-20230327140024982](assets/image-20230327140024982.png)
 
+# Lecture 28 (03-29-23)
+
+## In-Memory File System Structures
+
+- Mount table storing file system mounts, mount points, file system types 
+- The following figure illustrates the necessary file system structures provided by the operating systems
+- Figure (a) refers to opening a file 
+- Figure (b) refers to reading a file
+- Plus buffers hold data blocks from secondary storage
+- Open returns a file handle for subsequent use
+- Data from read eventually copied to specified user process memory address
+
+![image-20230329143141470](assets/image-20230329143141470.png)
+
+## Directory Implementation
+
+- **Linear list** of file names with pointer to the data blocks
+  - Simple to program
+  - Time-consuming to execute 
+    - Linear search time
+    - Could keep ordered alphabetically via linked list or use B+ tree
+- **Hash Table** – linear list with hash data structure
+  - Decreases directory search time 
+  - **Collisions** – situations where two file names hash to the same location
+  - Only good if entries are fixed size, or use chained-overflow method
+
+## Allocation Methods - Contiguous
+
+- An allocation method refers to how disk blocks are allocated for files:
+-  **Contiguous allocation** – each file occupies set of contiguous blocks
+  - Best performance in most cases
+  - Simple – only starting location (block #) and length (number of blocks) are required
+  - Problems include finding space for file, knowing file size, external fragmentation, need for **compaction off-line (downtime) or on-line**
+
+## Contiguous Allocation
+
+- Mapping from logical to physical
+
+>   LA / 512
+>
+>    /        \
+>
+>  Q         R
+
+Block to be accessed = Q + starting address Displacement into block = R
+
+![image-20230329143539645](assets/image-20230329143539645.png)
+
+## Extent-Based Systems
+
+- Many newer file systems (i.e., Veritas File System) use a modified contiguous allocation scheme
+- Extent-based file systems allocate disk blocks in extents
+- An **extent** is a contiguous block of disks 
+  - Extents are allocated for file allocation 
+  - A file consists of one or more extents
+
+## Allocation Methods - Linked
+
+- **Linked allocation** – each file a linked list of blocks
+  - File ends at nil pointer
+  - No external fragmentation
+  - Each block contains pointer to next block
+  - No compaction, external fragmentation
+  - Free space management system called when new block needed 
+  - Improve efficiency by clustering blocks into groups but increases internal fragmentation
+  - Reliability can be a problem
+  - Locating a block can take many I/Os and disk seeks
+
+## Allocation Methods – Linked (Cont.)
+
+- FAT (File Allocation Table) variation
+  - Beginning of volume has table, indexed by block number
+  - Much like a linked list, but faster on disk and cacheable
+  - New block allocation simple
+
+## File-Allocation Table
+
+![image-20230329143753165](assets/image-20230329143753165.png)
+
+## Linked Allocation
+
+- Each file is a linked list of disk blocks: blocks may be scattered anywhere on the disk
+
+| ![image-20230329143850515](assets/image-20230329143850515.png) | ![image-20230329143903812](assets/image-20230329143903812.png) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+
+- Mapping 
+  - Block to be accessed is the Qth block in the linked chain of blocks representing the file.
+  - Displacement into block = R + 1
+
 # // TEXTBOOK  #
 
 # NOTES START #
